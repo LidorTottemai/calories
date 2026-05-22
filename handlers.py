@@ -3,11 +3,13 @@ from datetime import datetime
 
 from telegram import Update
 from telegram.constants import ChatAction
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, ConversationHandler
 
 import config
 import database
 import nutrition
+
+SETUP_DAY = 0
 
 
 def authorized_only(func):
@@ -25,8 +27,8 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         "ברוך הבא לבוט מעקב הקלוריות! 🥗\n\n"
         "שלח לי מה אכלת ואחשב עבורך קלוריות, חלבון, פחמימות וסיבים.\n\n"
         "פקודות:\n"
-        "/setgoal <יום> <קלוריות> — הגדרת יעד יומי\n"
-        "  לדוגמה: /setgoal א 1800\n"
+        "/setup — הגדרת יעדים מודרכת (מומלץ להתחלה)\n"
+        "/setgoal <יום> <קלוריות> — שינוי יעד לקלוריות ליום מסוים\n"
         "/goals — הצגת כל היעדים היומיים\n"
         "/today — סיכום היום הנוכחי\n"
         "/help — עזרה"
@@ -41,7 +43,8 @@ async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "  'אכלתי שתי ביצים עם טוסט'\n"
         "  '100 גרם חזה עוף עם אורז'\n\n"
         "פקודות:\n"
-        "/setgoal <יום> <קלוריות>\n"
+        "/setup — הגדרת יעדים מודרכת לכל ימי השבוע\n"
+        "/setgoal <יום> <קלוריות> — שינוי יעד ליום בודד\n"
         "  ימים: א ב ג ד ה ו ש\n"
         "  לדוגמה: /setgoal א 1800\n\n"
         "/goals — הצגת כל היעדים\n"
@@ -174,3 +177,59 @@ async def meal_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         f"יומי עד כה: {totals['total_calories']:,} קלוריות\n"
         f"נותרו: {remaining_str} מתוך {goal:,}"
     )
+
+
+def _ask_day_prompt(day_idx: int) -> str:
+    day_of_week = config.DAYS_ORDER[day_idx]
+    day_name = config.WEEKDAY_DISPLAY[day_of_week]
+    return f"כמה קלוריות ביום {day_name}?"
+
+
+@authorized_only
+async def setup_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data["setup_idx"] = 0
+    await update.message.reply_text(
+        "בוא נגדיר את יעדי הקלוריות לכל ימי השבוע 📋\n"
+        "שלח /cancel בכל שלב לביטול.\n\n"
+        + _ask_day_prompt(0)
+    )
+    return SETUP_DAY
+
+
+@authorized_only
+async def setup_day(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    idx = context.user_data.get("setup_idx", 0)
+    day_of_week = config.DAYS_ORDER[idx]
+
+    try:
+        calories = int(update.message.text.strip())
+    except ValueError:
+        await update.message.reply_text("נא להזין מספר בלבד.\n" + _ask_day_prompt(idx))
+        return SETUP_DAY
+
+    if not (500 <= calories <= 5000):
+        await update.message.reply_text(
+            "יעד חייב להיות בין 500 ל-5000.\n" + _ask_day_prompt(idx)
+        )
+        return SETUP_DAY
+
+    database.set_goal(day_of_week, calories)
+    idx += 1
+    context.user_data["setup_idx"] = idx
+
+    if idx < len(config.DAYS_ORDER):
+        await update.message.reply_text("✅ שמור!\n\n" + _ask_day_prompt(idx))
+        return SETUP_DAY
+
+    all_goals = database.get_all_goals()
+    lines = ["✅ כל היעדים הוגדרו!\n\n📋 סיכום:\n"]
+    for day in config.DAYS_ORDER:
+        goal = all_goals.get(day, 2000)
+        lines.append(f"{config.WEEKDAY_DISPLAY[day]}: {goal:,} קלוריות")
+    await update.message.reply_text("\n".join(lines))
+    return ConversationHandler.END
+
+
+async def setup_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text("ביטלת את ההגדרה. היעדים שהוגדרו עד כה נשמרו.")
+    return ConversationHandler.END

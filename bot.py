@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
+    ConversationHandler,
     MessageHandler,
     filters,
     ContextTypes,
@@ -16,6 +17,10 @@ from handlers import (
     goals_handler,
     today_handler,
     meal_handler,
+    setup_start,
+    setup_day,
+    setup_cancel,
+    SETUP_DAY,
 )
 from scheduler import build_scheduler
 
@@ -43,6 +48,15 @@ def main() -> None:
         .build()
     )
 
+    setup_conv = ConversationHandler(
+        entry_points=[CommandHandler("setup", setup_start)],
+        states={
+            SETUP_DAY: [MessageHandler(filters.TEXT & ~filters.COMMAND, setup_day)],
+        },
+        fallbacks=[CommandHandler("cancel", setup_cancel)],
+    )
+
+    application.add_handler(setup_conv)
     application.add_handler(CommandHandler("start", start_handler))
     application.add_handler(CommandHandler("help", help_handler))
     application.add_handler(CommandHandler("setgoal", setgoal_handler))
