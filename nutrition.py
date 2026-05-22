@@ -43,6 +43,58 @@ class NutritionResult:
     raw_description: str
 
 
+_MOTIVATION_SYSTEM_PROMPT = """אתה מאמן כושר ותזונה אישי בעברית — חם, אנושי, ומעצים.
+כתוב הודעת עידוד קצרה (2-4 משפטים) בהתאם למצב שמתואר.
+השתמש באימוג'ים בצורה טבעית. היה מגוון — אל תחזור על אותן פתיחות.
+הגב עם טקסט ההודעה בלבד, ללא ציטוטים או הסברים."""
+
+
+async def generate_motivation(
+    hour: int,
+    goal_cal: int,
+    goal_protein: float,
+    consumed_cal: int = 0,
+    consumed_protein: float = 0.0,
+) -> str:
+    if hour == 8:
+        user_content = (
+            f"בוקר טוב! היום היעד הוא {goal_cal:,} קלוריות ו-{goal_protein:.0f} גר' חלבון. "
+            "כתוב הודעת בוקר מעוררת ומוטיבציונית — בלי נתונים, רק עידוד."
+        )
+    else:
+        pct_cal = round(consumed_cal / goal_cal * 100) if goal_cal > 0 else 0
+        pct_protein = round(consumed_protein / goal_protein * 100) if goal_protein > 0 else 0
+        over_cal = consumed_cal - goal_cal
+
+        if hour == 12:
+            time_ctx = "אמצע היום (12:00)"
+        elif hour == 19:
+            time_ctx = "ערב (19:00)"
+        else:
+            time_ctx = "סוף היום (23:00)"
+
+        user_content = (
+            f"השעה: {time_ctx}\n"
+            f"קלוריות: {consumed_cal:,} מתוך יעד {goal_cal:,} ({pct_cal}%)"
+            + (f" — חריגה של {over_cal:,}" if over_cal > 0 else "") + "\n"
+            f"חלבון: {consumed_protein:.0f}g מתוך {goal_protein:.0f}g ({pct_protein}%)\n\n"
+            "כתוב הודעת עידוד מותאמת אישית. "
+            "חריגה של פחות מ-5% היא לגמרי בסדר — אל תגזים בביקורת. "
+            "אם לא נרשמו ארוחות — עודד לרשום."
+        )
+
+    response = await _get_client().chat.completions.create(
+        model=config.OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": _MOTIVATION_SYSTEM_PROMPT},
+            {"role": "user", "content": user_content},
+        ],
+        temperature=0.9,
+        max_tokens=200,
+    )
+    return response.choices[0].message.content.strip()
+
+
 async def analyze_meal(user_text: str) -> NutritionResult:
     response = await _get_client().chat.completions.create(
         model=config.OPENAI_MODEL,
