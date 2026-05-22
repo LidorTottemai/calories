@@ -19,7 +19,8 @@ def init_db() -> None:
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS daily_goals (
             day_of_week INTEGER PRIMARY KEY,
-            calorie_goal INTEGER NOT NULL DEFAULT 2000
+            calorie_goal INTEGER NOT NULL DEFAULT 2000,
+            protein_goal REAL NOT NULL DEFAULT 150
         );
 
         CREATE TABLE IF NOT EXISTS meal_logs (
@@ -35,10 +36,16 @@ def init_db() -> None:
 
         CREATE INDEX IF NOT EXISTS idx_meal_logs_date ON meal_logs(log_date);
     """)
+    # Migration: add protein_goal column to existing databases
+    try:
+        conn.execute("ALTER TABLE daily_goals ADD COLUMN protein_goal REAL NOT NULL DEFAULT 150")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass  # Column already exists
     # Pre-populate default goals for all 7 days if not present
     for day in range(7):
         conn.execute(
-            "INSERT OR IGNORE INTO daily_goals (day_of_week, calorie_goal) VALUES (?, 2000)",
+            "INSERT OR IGNORE INTO daily_goals (day_of_week, calorie_goal, protein_goal) VALUES (?, 2000, 150)",
             (day,),
         )
     conn.commit()
@@ -48,26 +55,33 @@ def get_today_date_str() -> str:
     return datetime.now(config.TIMEZONE).strftime("%Y-%m-%d")
 
 
-def get_goal(day_of_week: int) -> int:
+def get_goals_for_day(day_of_week: int) -> dict:
     row = _get_conn().execute(
-        "SELECT calorie_goal FROM daily_goals WHERE day_of_week = ?", (day_of_week,)
+        "SELECT calorie_goal, protein_goal FROM daily_goals WHERE day_of_week = ?", (day_of_week,)
     ).fetchone()
-    return row["calorie_goal"] if row else 2000
+    return {"calories": row["calorie_goal"], "protein": row["protein_goal"]} if row else {"calories": 2000, "protein": 150}
 
 
-def set_goal(day_of_week: int, calories: int) -> None:
+def set_goal(day_of_week: int, calories: int | None = None, protein: float | None = None) -> None:
     conn = _get_conn()
-    conn.execute(
-        "INSERT INTO daily_goals (day_of_week, calorie_goal) VALUES (?, ?)"
-        " ON CONFLICT(day_of_week) DO UPDATE SET calorie_goal = excluded.calorie_goal",
-        (day_of_week, calories),
-    )
+    if calories is not None:
+        conn.execute(
+            "INSERT INTO daily_goals (day_of_week, calorie_goal) VALUES (?, ?)"
+            " ON CONFLICT(day_of_week) DO UPDATE SET calorie_goal = excluded.calorie_goal",
+            (day_of_week, calories),
+        )
+    if protein is not None:
+        conn.execute(
+            "INSERT INTO daily_goals (day_of_week, protein_goal) VALUES (?, ?)"
+            " ON CONFLICT(day_of_week) DO UPDATE SET protein_goal = excluded.protein_goal",
+            (day_of_week, protein),
+        )
     conn.commit()
 
 
-def get_all_goals() -> dict[int, int]:
-    rows = _get_conn().execute("SELECT day_of_week, calorie_goal FROM daily_goals").fetchall()
-    return {row["day_of_week"]: row["calorie_goal"] for row in rows}
+def get_all_goals() -> dict[int, dict]:
+    rows = _get_conn().execute("SELECT day_of_week, calorie_goal, protein_goal FROM daily_goals").fetchall()
+    return {row["day_of_week"]: {"calories": row["calorie_goal"], "protein": row["protein_goal"]} for row in rows}
 
 
 def log_meal(

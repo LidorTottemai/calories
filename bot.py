@@ -18,9 +18,11 @@ from handlers import (
     today_handler,
     meal_handler,
     setup_start,
-    setup_day,
+    setup_calories,
+    setup_protein,
     setup_cancel,
-    SETUP_DAY,
+    SETUP_CALORIES,
+    SETUP_PROTEIN,
 )
 from scheduler import build_scheduler
 
@@ -51,7 +53,8 @@ def main() -> None:
     setup_conv = ConversationHandler(
         entry_points=[CommandHandler("setup", setup_start)],
         states={
-            SETUP_DAY: [MessageHandler(filters.TEXT & ~filters.COMMAND, setup_day)],
+            SETUP_CALORIES: [MessageHandler(filters.TEXT & ~filters.COMMAND, setup_calories)],
+            SETUP_PROTEIN: [MessageHandler(filters.TEXT & ~filters.COMMAND, setup_protein)],
         },
         fallbacks=[CommandHandler("cancel", setup_cancel)],
     )
