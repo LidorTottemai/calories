@@ -116,7 +116,7 @@ async def analyze_meal(user_text: str) -> NutritionResult:
             {"role": "system", "content": _SYSTEM_PROMPT},
             {"role": "user", "content": user_text},
         ],
-        temperature=0.2,
+        temperature=0,
     )
 
     data = json.loads(response.choices[0].message.content)
