@@ -26,6 +26,12 @@ Typical Israeli/Middle-Eastern reference portions (use these when no quantity is
 - בטטה / sweet potato (100g): 90 kcal, 2g protein, 20g carbs
 - פיתה / pita: ~65g → 170 kcal, 5g protein, 35g carbs
 - אורז מבושל / cooked rice (cup): ~180g → 200 kcal, 4g protein, 44g carbs
+- גביע לאבנה / labneh container (גד, תנובה etc.): standard = 250g → ~200 kcal, 21g protein, 5g carbs
+- לאבנה 5% / labneh 5% fat (100g): 80 kcal, 8.5g protein, 2g carbs
+- גבינה בולגרית 5% / Bulgarian cheese 5% (100g): 120 kcal, 14g protein, 2g carbs
+- קוטג' / cottage cheese (container 250g): 200 kcal, 22g protein, 6g carbs
+- ביצה / egg (large): 75 kcal, 6.5g protein, 0.5g carbs
+- פריכייה / rice cake (one piece): ~35 kcal, 0.7g protein, 7g carbs
 
 Respond ONLY with a valid JSON object with exactly these keys:
 {
@@ -43,6 +49,7 @@ Rules:
 - ALWAYS list every ingredient as a separate item — never skip one.
 - When a quantity is given (e.g. "20 גרם"), use it exactly.
 - When no quantity is given, use the reference portions above or a realistic home/restaurant serving.
+- "גביע" = a full standard container (usually 250g for dairy). Never assume a small spoonful.
 - has_fiber is true if the meal contains vegetables, fruit, legumes, whole grains, nuts, or seeds.
 - If you cannot identify the food at all, return: {"error": "cannot_identify"}"""
 

@@ -53,6 +53,15 @@ DAY_KEYBOARD = InlineKeyboardMarkup([
 ])
 
 
+def _fmt_remaining(remaining: float, decimals: int = 0) -> str:
+    if remaining >= 0:
+        fmt = f"{remaining:,.{decimals}f}"
+        return f"נותרו {fmt}"
+    else:
+        fmt = f"{abs(remaining):,.{decimals}f}"
+        return f"חרגת ב-{fmt} 🔴"
+
+
 def authorized_only(func):
     @wraps(func)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -160,14 +169,8 @@ async def today_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     cal_consumed = totals["total_calories"]
     cal_remaining = goals["calories"] - cal_consumed
-    cal_remaining_str = f"{cal_remaining:,}" if cal_remaining >= 0 else f"-{abs(cal_remaining):,}"
-    cal_status = "✅" if cal_remaining >= 0 else "❌"
-
     prot_consumed = totals["total_protein_g"]
     prot_remaining = goals["protein"] - prot_consumed
-    prot_remaining_str = f"{prot_remaining:.1f}" if prot_remaining >= 0 else f"-{abs(prot_remaining):.1f}"
-    prot_status = "✅" if prot_remaining >= 0 else "❌"
-
     fiber_str = "🌿 " * totals["fiber_meal_count"] if totals["fiber_meal_count"] > 0 else "אין"
 
     date_display = now.strftime("%d/%m/%Y")
@@ -175,10 +178,10 @@ async def today_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     await update.message.reply_text(
         f"📊 סיכום היום — {day_name}, {date_display}\n\n"
-        f"🔥 קלוריות: {cal_consumed:,} / {goals['calories']:,} {cal_status}\n"
-        f"   נותרו: {cal_remaining_str} קל'\n\n"
-        f"💪 חלבון: {prot_consumed:.1f} / {goals['protein']:.0f} גר' {prot_status}\n"
-        f"   נותרו: {prot_remaining_str} גר'\n\n"
+        f"🔥 קלוריות: {cal_consumed:,} / {goals['calories']:,}\n"
+        f"   {_fmt_remaining(cal_remaining)} קל'\n\n"
+        f"💪 חלבון: {prot_consumed:.1f} / {goals['protein']:.0f} גר'\n"
+        f"   {_fmt_remaining(prot_remaining, decimals=1)} גר'\n\n"
         f"🌾 פחמימות: {totals['total_carbs_g']:.1f} גר'\n"
         f"🌿 ארוחות עם סיבים: {fiber_str}",
         reply_markup=MAIN_KEYBOARD,
@@ -231,11 +234,7 @@ async def meal_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     totals = database.get_day_totals(today)
 
     cal_remaining = goals["calories"] - totals["total_calories"]
-    cal_remaining_str = f"{cal_remaining:,}" if cal_remaining >= 0 else f"-{abs(cal_remaining):,}"
-
     prot_remaining = goals["protein"] - totals["total_protein_g"]
-    prot_remaining_str = f"{prot_remaining:.1f}" if prot_remaining >= 0 else f"-{abs(prot_remaining):.1f}"
-
     fiber_line = "\n🌿" if result.has_fiber else ""
 
     await update.message.reply_text(
@@ -245,8 +244,8 @@ async def meal_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         f"💪 חלבון: {result.protein_g:.1f} גר'\n"
         f"🌾 פחמימות: {result.carbs_g:.1f} גר'\n\n"
         f"—\n"
-        f"קלוריות — נותרו: {cal_remaining_str} מתוך {goals['calories']:,}\n"
-        f"חלבון — נותרו: {prot_remaining_str} גר' מתוך {goals['protein']:.0f}",
+        f"🔥 {_fmt_remaining(cal_remaining)} מתוך {goals['calories']:,}\n"
+        f"💪 {_fmt_remaining(prot_remaining, decimals=1)} גר' מתוך {goals['protein']:.0f}",
         reply_markup=MAIN_KEYBOARD,
     )
 
