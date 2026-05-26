@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from openai import AsyncOpenAI
 import config
+from foods import FOOD_KEYS_LIST, lookup
 
 _client: AsyncOpenAI | None = None
 
@@ -13,45 +14,55 @@ def _get_client() -> AsyncOpenAI:
     return _client
 
 
-_SYSTEM_PROMPT = """You are a precise nutrition calculator. The user describes a meal in Hebrew or English.
+_SYSTEM_PROMPT = f"""You are a precise nutrition calculator. The user describes a meal in Hebrew or English.
 
 STEP 1 — Break the meal into individual items and estimate each one separately.
 STEP 2 — Sum all items to get the totals.
 
+Known food keys (assign one when it exactly matches the ingredient):
+{FOOD_KEYS_LIST}
+
 Typical Israeli/Middle-Eastern reference portions (use these when no quantity is given):
-- כרע עוף / chicken leg (bone-in, grilled): ~280g raw → ~220 kcal, 28g protein
-- שיפוד פרגית / chicken skewer: ~120g meat → ~200 kcal, 25g protein
-- שיפוד אנטריקוט / entrecote skewer: ~120g → ~300 kcal, 24g protein
-- תפוח אדמה קטן / small potato: ~90g → 70 kcal, 1.5g protein, 16g carbs
-- בטטה / sweet potato (100g): 90 kcal, 2g protein, 20g carbs
-- פיתה / pita: ~65g → 170 kcal, 5g protein, 35g carbs
-- אורז מבושל / cooked rice (cup): ~180g → 200 kcal, 4g protein, 44g carbs
-- גביע לאבנה / labneh container (גד, תנובה etc.): standard = 250g → ~200 kcal, 21g protein, 5g carbs
-- לאבנה 5% / labneh 5% fat (100g): 80 kcal, 8.5g protein, 2g carbs
-- גבינה בולגרית 5% / Bulgarian cheese 5% (100g): 120 kcal, 14g protein, 2g carbs
-- קוטג' / cottage cheese (container 250g): 200 kcal, 22g protein, 6g carbs
-- ביצה / egg (large): 75 kcal, 6.5g protein, 0.5g carbs
-- פריכייה / rice cake (one piece): ~35 kcal, 0.7g protein, 7g carbs
+- כרע עוף / chicken leg (bone-in, grilled): ~280g raw → amount_g=220 cooked
+- שיפוד פרגית / chicken skewer: amount_g=120
+- שיפוד אנטריקוט / entrecote skewer: amount_g=120
+- תפוח אדמה קטן / small potato: amount_g=90
+- בטטה / sweet potato: amount_g=100
+- פיתה / pita: amount_g=65
+- אורז מבושל / cooked rice (cup): amount_g=180
+- גביע לאבנה / labneh container (גד, תנובה etc.): amount_g=250
+- קוטג' / cottage cheese container: amount_g=250
+- ביצה / egg (large): amount_g=50
+- פריכייה / rice cake (one piece): amount_g=9
 
 Respond ONLY with a valid JSON object with exactly these keys:
-{
+{{
   "items": [
-    {"name": "<item name>", "calories": <int>, "protein_g": <float>, "carbs_g": <float>}
+    {{
+      "name": "<item name>",
+      "food_key": "<key from the known list above, or null>",
+      "amount_g": <estimated grams as float>,
+      "calories": <int estimate>,
+      "protein_g": <float estimate>,
+      "carbs_g": <float estimate>
+    }}
   ],
   "calories": <integer, SUM of all items>,
   "protein_g": <float, SUM, one decimal>,
   "carbs_g": <float, SUM, one decimal>,
   "has_fiber": <boolean>,
   "description": "<short English summary, max 60 chars>"
-}
+}}
 
 Rules:
 - ALWAYS list every ingredient as a separate item — never skip one.
-- When a quantity is given (e.g. "20 גרם"), use it exactly.
+- When a quantity is given (e.g. "20 גרם"), use it exactly as amount_g.
 - When no quantity is given, use the reference portions above or a realistic home/restaurant serving.
 - "גביע" = a full standard container (usually 250g for dairy). Never assume a small spoonful.
+- Set food_key only when you are confident it exactly matches; otherwise set null.
 - has_fiber is true if the meal contains vegetables, fruit, legumes, whole grains, nuts, or seeds.
-- If you cannot identify the food at all, return: {"error": "cannot_identify"}"""
+- has_fiber is false for: white rice, white bread, meat, dairy, eggs, refined sugar.
+- If you cannot identify the food at all, return: {{"error": "cannot_identify"}}"""
 
 
 @dataclass
@@ -130,6 +141,22 @@ async def analyze_meal(user_text: str) -> NutritionResult:
 
     if "error" in data:
         raise ValueError("cannot_identify")
+
+    # Override AI estimates with DB values for known food_keys
+    for item in data.get("items", []):
+        food_key = item.get("food_key")
+        amount_g = item.get("amount_g")
+        if food_key and amount_g:
+            override = lookup(food_key, float(amount_g))
+            if override:
+                item["calories"], item["protein_g"], item["carbs_g"] = override
+
+    # Recalculate totals from (possibly overridden) items
+    items = data.get("items", [])
+    if items:
+        data["calories"] = sum(int(i.get("calories", 0)) for i in items)
+        data["protein_g"] = round(sum(float(i.get("protein_g", 0)) for i in items), 1)
+        data["carbs_g"] = round(sum(float(i.get("carbs_g", 0)) for i in items), 1)
 
     return NutritionResult(
         calories=int(data["calories"]),
