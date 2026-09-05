@@ -1,0 +1,532 @@
+<title>הפער של 8,024 ₪</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#EDEEF2; --surface:#FFFFFF; --surface-2:#E3E5EC; --track:#D3D7E1;
+    --ink:#16192A; --ink-2:#545A6E; --ink-3:#7C8296;
+    --rule:#D6D9E2; --rule-strong:#BFC3D0;
+    --gain:#0E7BA3; --gain-soft:#DDEBF3;
+    --drain:#B24420; --drain-soft:#F5E2DA;
+    --locked:#8B5AA8; --locked-soft:#EDE3F3;
+    --shadow:rgba(22,25,42,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    direction:rtl; margin:0; background:var(--ground); color:var(--ink);
+    font-family:"Assistant","Arial Hebrew",system-ui,sans-serif; font-size:16.5px;
+    font-weight:400; line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Suez One","Frank Ruhl Libre",Georgia,serif; font-weight:400;
+           text-wrap:balance; margin:0; letter-spacing:-.005em}
+  h1{font-size:clamp(30px,5.2vw,46px); line-height:1.14}
+  h2{font-size:clamp(21px,2.9vw,27px); line-height:1.3}
+  h3{font-size:17.5px; line-height:1.35}
+  p{margin:0}
+  .n{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+     font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .ltr{direction:ltr; unicode-bidi:isolate; display:inline-block}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:clamp(22px,4.5vw,54px) clamp(15px,4vw,38px) 80px}
+  .prose{max-width:66ch}
+  .prose p + p{margin-top:14px}
+  .eyebrow{font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+           color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+  section{margin-top:clamp(40px,5.5vw,64px)}
+  .sec-head{display:flex; flex-direction:column; gap:7px; margin-bottom:20px}
+  .sec-head > p{color:var(--ink-2); font-weight:300; max-width:66ch; font-size:15.5px}
+
+  /* ---------- header ---------- */
+  header{display:flex; flex-direction:column; gap:15px; padding-bottom:26px;
+         border-bottom:2px solid var(--ink)}
+  .lede{max-width:64ch; color:var(--ink-2); font-size:18.5px; font-weight:300}
+  .lede strong{font-weight:600; color:var(--ink)}
+
+  /* ---------- gap chart ---------- */
+  .gap{margin-top:26px; display:flex; flex-direction:column; gap:9px}
+  .gapbar{position:relative; height:64px; background:var(--surface-2); border-radius:2px}
+  .gapfill{position:absolute; inset-block:0; inset-inline-start:0; background:var(--gain-soft);
+           border-inline-end:2px solid var(--gain); border-radius:2px 0 0 2px}
+  .gapover{position:absolute; inset-block:0; background:var(--drain); border-radius:0 2px 2px 0}
+  .gaplabels{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap}
+  .gaplab{font-size:13.5px; color:var(--ink-2); display:flex; align-items:baseline; gap:7px}
+  .gaplab b{font-size:16px; color:var(--ink); font-weight:600}
+  .swatch{width:10px; height:10px; border-radius:2px; flex:none; align-self:center}
+
+  /* ---------- stat strip ---------- */
+  .strip{display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+         gap:1px; background:var(--rule); border:1px solid var(--rule); margin-top:26px}
+  .stat{background:var(--surface); padding:15px 17px; display:flex; flex-direction:column; gap:1px}
+  .stat .k{font-size:12.5px; color:var(--ink-3); letter-spacing:.02em}
+  .stat .v{font-family:"Suez One",serif; font-size:25px; line-height:1.2;
+           font-variant-numeric:tabular-nums}
+  .stat .t{font-size:12.5px; color:var(--ink-3); font-weight:300}
+  .stat.bad .v{color:var(--drain)} .stat.good .v{color:var(--gain)}
+
+  /* ---------- ledger tables ---------- */
+  .stage{margin-top:30px}
+  .stage-head{display:flex; align-items:baseline; gap:11px; flex-wrap:wrap; margin-bottom:5px}
+  .step{font-family:"Suez One",serif; font-size:15px; width:29px; height:29px; flex:none;
+        display:grid; place-items:center; border-radius:50%; background:var(--ink);
+        color:var(--ground); line-height:1; padding-block-start:2px}
+  .when{font-size:12.5px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace;
+        letter-spacing:.02em}
+  .stage > p.intro{color:var(--ink-2); font-weight:300; font-size:15px; max-width:66ch;
+                   margin-block:6px 14px}
+  .tblwrap{overflow-x:auto; border:1px solid var(--rule); background:var(--surface)}
+  table{width:100%; border-collapse:collapse; font-size:14.5px; min-width:520px}
+  th{text-align:start; font-weight:600; font-size:11.5px; letter-spacing:.1em;
+     text-transform:uppercase; color:var(--ink-3); padding:11px 16px;
+     border-bottom:1px solid var(--rule-strong); white-space:nowrap;
+     font-family:"IBM Plex Mono",monospace}
+  th.num,td.num{text-align:end}
+  td{padding:11px 16px; border-bottom:1px solid var(--rule); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .item{font-weight:600}
+  .note{display:block; font-size:13px; color:var(--ink-3); font-weight:300; margin-top:1px}
+  td.num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+         white-space:nowrap; color:var(--ink-2)}
+  td.cut{color:var(--gain); font-weight:500}
+  tr.sum td{background:var(--surface-2); font-weight:600; color:var(--ink);
+            border-top:1px solid var(--rule-strong)}
+  tr.sum td.cut{color:var(--gain)}
+  tr.neg td.cut{color:var(--drain)}
+
+  /* ---------- ladder ---------- */
+  .ladder{border:1px solid var(--rule); background:var(--surface); padding:20px 18px 12px}
+  .lrow{display:grid; grid-template-columns:minmax(92px,148px) 1fr minmax(120px,auto);
+        gap:14px; align-items:center; padding-block:9px}
+  .lname{font-size:13px; color:var(--ink-3); font-weight:300}
+  .lname b{display:block; color:var(--ink); font-weight:600; font-size:14.5px; line-height:1.3}
+  .ltrack{position:relative; height:28px}
+  .lfill{position:absolute; inset-block:0; inset-inline-start:0; border-radius:2px;
+         background:var(--track)}
+  .lfill.is-first{background:var(--drain-soft); border-inline-end:2px solid var(--drain)}
+  .lfill.is-last{background:var(--gain-soft); border-inline-end:2px solid var(--gain)}
+  .incmark{position:absolute; inset-block:-4px; width:0;
+           border-inline-start:2px dashed var(--ink-3); pointer-events:none}
+  .lval{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+        font-size:13.5px; white-space:nowrap; text-align:end; color:var(--ink)}
+  .ldelta{display:block; font-size:12px; color:var(--ink-3)}
+  .ldelta.bad{color:var(--drain)} .ldelta.good{color:var(--gain)}
+  .lfoot{padding-block:4px 2px}
+  .lfoot .ltrack{height:16px}
+  .inclab{position:absolute; inset-block-start:0; font-size:11.5px; color:var(--ink-3);
+          font-family:"IBM Plex Mono",monospace; white-space:nowrap;
+          transform:translateX(50%)}
+
+  /* ---------- category chart ---------- */
+  .cats{border:1px solid var(--rule); background:var(--surface); padding:16px 18px}
+  .crow{display:grid; grid-template-columns:minmax(84px,116px) 1fr minmax(112px,auto);
+        gap:13px; align-items:center; padding-block:7px; width:100%; text-align:start;
+        background:none; border:none; font:inherit; color:inherit; cursor:default; direction:rtl}
+  .crow:focus-visible{outline:2px solid var(--gain); outline-offset:2px}
+  .cname{font-size:14px; font-weight:600}
+  .ctrack{display:flex; gap:2px; height:19px; align-items:stretch}
+  .ckeep{background:var(--track); border-radius:2px}
+  .ckeep.locked{background:var(--locked)}
+  .ccut{background:var(--gain); border-radius:2px}
+  .cval{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2);
+        font-variant-numeric:tabular-nums; white-space:nowrap; text-align:end}
+  .cval b{color:var(--ink); font-weight:500}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; padding-block:12px 4px; margin-block-start:8px;
+          border-block-start:1px solid var(--rule); font-size:13px; color:var(--ink-2)}
+  .legend span{display:flex; align-items:center; gap:6px}
+  #tip{position:fixed; z-index:9; pointer-events:none; background:var(--ink); color:var(--ground);
+       padding:8px 11px; border-radius:3px; font-size:13px; line-height:1.5; max-width:250px;
+       box-shadow:0 4px 14px var(--shadow); opacity:0; transition:opacity .12s}
+  #tip.on{opacity:1}
+  #tip b{font-weight:700}
+  #tip .tn{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+
+  /* ---------- levers / checklist ---------- */
+  .levers{display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule)}
+  .lever{background:var(--surface); padding:17px 19px; display:grid;
+         grid-template-columns:1fr auto; gap:6px 16px; align-items:baseline}
+  .lever h3{grid-column:1}
+  .lever .amt{font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:500;
+              color:var(--locked); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .lever p{grid-column:1/-1; font-size:14.5px; color:var(--ink-2); font-weight:300}
+  ol.plan{margin:0; padding:0; list-style:none; counter-reset:s;
+          display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule)}
+  ol.plan li{background:var(--surface); padding:14px 19px 14px 19px; counter-increment:s;
+             display:grid; grid-template-columns:auto 1fr; gap:13px; align-items:baseline;
+             font-size:15px}
+  ol.plan li::before{content:counter(s); font-family:"IBM Plex Mono",monospace; font-size:12.5px;
+                     color:var(--ink-3); padding-block-start:2px}
+  ol.plan b{font-weight:600}
+  ol.plan em{font-style:normal; color:var(--gain); font-weight:600;
+             font-family:"IBM Plex Mono",monospace}
+
+  .callout{border-inline-start:3px solid var(--drain); background:var(--drain-soft);
+           padding:16px 19px; margin-block-start:22px; max-width:66ch}
+  .callout p{font-size:15px; color:var(--ink)}
+  .callout .t{font-weight:700; margin-block-end:4px}
+
+  footer{margin-top:56px; padding-top:18px; border-top:1px solid var(--rule);
+         font-size:13px; color:var(--ink-3); font-weight:300;
+         display:flex; flex-direction:column; gap:7px; max-width:76ch}
+  footer b{font-weight:600; color:var(--ink-2)}
+  code{font-family:"IBM Plex Mono",monospace; font-size:12px; background:var(--surface-2);
+       padding:1px 5px; border-radius:2px; direction:ltr; display:inline-block; color:var(--ink-2)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:640px){
+    .lrow{grid-template-columns:1fr; gap:5px}
+    .incline{display:none}
+    .inclab{display:none}
+    .crow{grid-template-columns:minmax(76px,1fr) 1.4fr; }
+    .crow .cval{grid-column:1/-1; text-align:start}
+  }
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">RiseUp · מרץ–אוגוסט 2026 · 1,297 עסקאות · הכנסה 36,000 ₪ נטו</p>
+  <h1>הפער של 8,024 ₪</h1>
+  <p class="lede">
+    אתם מוציאים <strong>44,024 ₪ בחודש</strong> ומכניסים 36,000 ₪.
+    ההפרש הוא <strong>96,288 ₪ בשנה</strong> שנלקחים מאשראי או מאוברדראפט.
+    הדף הזה מראה בדיוק מאיפה מחזירים אותם — <strong>9,076 ₪ בחודש</strong>,
+    בלי לגעת בשכר הדירה, בחינוך ובהחזר ההלוואה.
+  </p>
+
+  <div class="gap" id="gapchart"></div>
+</header>
+
+<div class="strip">
+  <div class="stat"><span class="k">הכנסה נטו</span><span class="v n">36,000 ₪</span><span class="t">לחודש</span></div>
+  <div class="stat"><span class="k">הוצאה בפועל</span><span class="v n">44,024 ₪</span><span class="t">ממוצע 6 חודשים</span></div>
+  <div class="stat bad"><span class="k">הפער החודשי</span><span class="v n"><span class="ltr">−8,024</span> ₪</span><span class="t">22% מעל ההכנסה</span></div>
+  <div class="stat good"><span class="k">בר־חיתוך</span><span class="v n">9,076 ₪</span><span class="t">108,912 ₪ בשנה</span></div>
+</div>
+
+<section>
+  <div class="sec-head">
+    <h2>מה באמת קורה כאן</h2>
+  </div>
+  <div class="prose">
+    <p>הפער אינו תוצאה של חודש חריג. הוא חוזר בכל אחד מששת החודשים, ומשמעותו שכל
+      36 ימי עבודה אתם מוסיפים חודש שלם של הוצאות שלא כוסה. במקביל, 372 ₪ בחודש
+      נכנסים ל"חיסכון והשקעות" — כלומר אתם חוסכים בריבית נמוכה כסף שאתם לווים
+      בריבית גבוהה יותר.</p>
+    <p>מתוך 44,024 ₪, <strong>18,193 ₪ נעולים</strong>: שכר דירה, ארנונה, חשמל, מים,
+      תפארת האחוזה, צהרון וחוגים, החזר ההלוואה וביטוחי חיים ובריאות. את הפער
+      של 8,024 ₪ צריך להוציא מ־<strong>25,831 ₪ הגמישים</strong> שנשארו — כלומר
+      חיתוך של 35% מהחלק שאפשר לגעת בו. זה הרבה, וזה אפשרי, אבל רק אם עושים את
+      שלושת השלבים ולא רק את הראשון.</p>
+    <p>הדבר השני שהנתונים מראים הוא שההוצאה שלכם <strong>גושית ולא שוטפת</strong>.
+      בתוך ששת החודשים: Airbnb 4,590 ₪, מנוי בריכה 3,350 ₪, שקם ובאג 2,849 ₪,
+      תשלום ללאומי 2,300 ₪, משיכת מזומן 2,258 ₪, כתר פלסטיק 1,466 ₪.
+      כמעט 19,400 ₪ — 3,240 ₪ בחודש — של "חד־פעמיים" שחוזרים כל חודש בלבוש אחר.
+      לכן חלק מהתוכנית הוא לא לוותר על דברים אלא לפרוס אותם: קופת ייעוד חודשית
+      לנופש, לרכב ולציוד, במקום הפתעה שנופלת על החודש.</p>
+  </div>
+
+  <div class="callout">
+    <p class="t">האוכל הוא הסעיף שנושא את רוב החיתוך</p>
+    <p>8,993 ₪ בחודש — 25% מההכנסה נטו. Wolt לבדו 2,110 ₪ ב־91 הזמנות,
+      והקצב 1,894 ₪ ב־14 קניות בלבד. אחרי התוכנית האוכל יורד ל־5,801 ₪,
+      שזה עדיין כ־190 ₪ ליום למשפחה.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>שלושת השלבים</h2>
+    <p>הסדר הוא סדר ביצוע אמיתי, לא דירוג חשיבות: שלב ① הוא שיחות טלפון וביטולים
+      שאפשר לעשות השבוע, שלב ② הוא הרגלים שנבנים לאורך חודש, שלב ③ דורש החלטה
+      משותפת. הטורים הם הממוצע החודשי היום, היעד, וההפרש.</p>
+  </div>
+  <div id="stages"></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>איפה זה נוחת</h2>
+    <p>אותה סקאלה בכל השורות. הקו המקווקו הוא ההכנסה — 36,000 ₪.
+      רק אחרי שלושת השלבים ההוצאה יורדת מתחתיו.</p>
+  </div>
+  <div class="ladder" id="ladder"></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>לאן הולך הכסף — ומה נחתך מכל סעיף</h2>
+    <p>12 הקטגוריות הגדולות, לפי הממוצע החודשי הנוכחי. החלק הכהה בכל פס הוא
+      מה שנשאר, החלק בטורקיז הוא מה שנחתך. סגול = התחייבות נעולה שלא נגענו בה.</p>
+  </div>
+  <div class="cats" id="cats"></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>שלושת המנופים שלא נגענו בהם</h2>
+    <p>ביקשתם להשאיר אותם בחוץ, והתוכנית מכבדת את זה. אבל צריך לדעת כמה הם שווים,
+      כי הם מסבירים למה החיתוך חייב להיות כה עמוק במקומות אחרים.</p>
+  </div>
+  <div class="levers">
+    <div class="lever">
+      <h3>תפארת האחוזה</h3><span class="amt n">3,833 ₪</span>
+      <p>46,000 ₪ בשנה, 10.6% מההכנסה נטו — הסעיף השלישי בגודלו בבית, אחרי הדיור והאוכל.
+        הגדרתם אותו כהתחייבות סגורה ולכן הוא לא נכלל בחיתוך. למען הפרופורציה:
+        הוא לבדו שווה כמעט חצי מהפער החודשי, והוא הסעיף היחיד בגודל הזה שהוא החלטה
+        ולא חוזה. אם תרצו — הקטנה שלו לחצי היא 1,917 ₪ בחודש נוספים.</p>
+    </div>
+    <div class="lever">
+      <h3>שכר דירה</h3><span class="amt n">7,233 ₪</span>
+      <p>עלה מ־7,000 ל־7,350 ₪ באפריל. ב־36,000 ₪ נטו זה 20% מההכנסה — עדיין בטווח הסביר,
+        ולכן לא הצענו לזוז. לצורך התמחור בלבד: כל 500 ₪ בשכר דירה שווים 6,000 ₪ בשנה.</p>
+    </div>
+    <div class="lever">
+      <h3>ההלוואה</h3><span class="amt n">2,850 ₪</span>
+      <p>קרן 2,350 ₪ + ריבית 500 ₪. מיחס הקרן לריבית לאורך ששת החודשים עולה ריבית
+        חודשית של כ־0.51% (כ־6.3% שנתי), יתרה של כ־89,000 ₪ ועוד כ־34 תשלומים.
+        זו ריבית סבירה — מיחזור כמעט לא ישתלם, ולכן הוא לא נספר כחיסכון.
+        אבל בעוד כשלוש שנים 2,850 ₪ בחודש משתחררים מעצמם. עד אז: לא לקחת חוב חדש.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>החודש הראשון, לפי הסדר</h2>
+    <p>שבע פעולות. הראשונות חמש הן שיחות וכפתורים; השתיים האחרונות הן מה שהופך
+      את זה לקבוע.</p>
+  </div>
+  <ol class="plan">
+    <li><span><b>מוחקים את אפליקציית Wolt מהטלפון של שניכם</b> וקובעים תקרה של שתי הזמנות בחודש. זה הסעיף הבודד הגדול ביותר — <em>1,410 ₪</em>.</span></li>
+    <li><span><b>מבטלים ספק טלוויזיה אחד</b> (YES 184 ₪ ו־HOT 77 ₪ רצים במקביל) ומבטלים את Akool ואת ChatGPT, משאירים את Claude. <em>384 ₪</em>.</span></li>
+    <li><span><b>מכרז ביטוחים</b>: פנייה לשלוש סוכנויות על ביטוח הרכב (825 ₪) ועל ביטוחי החיים והבריאות (557 ₪), ובאותה שיחה ביטול עמלות הכרטיס. <em>274 ₪</em>.</span></li>
+    <li><span><b>סורקים את חשבון Apple</b> — 203 ₪ בחודש ב־27 חיובים נפרדים. כל מנוי שאף אחד לא זכר שקיים, יוצא. <em>83 ₪</em>.</span></li>
+    <li><span><b>קונים בשר פעם בחודש בקנייה מתוכננת</b> במקום 14 קניות ספונטניות, ומחליטים מראש על שתי ארוחות חוץ בחודש. <em>2,382 ₪</em>.</span></li>
+    <li><span><b>פותחים חשבון נפרד לקופות ייעוד</b> והוראת קבע אליו: נופש 400 ₪, רכב 500 ₪, ציוד וחשמל 500 ₪. ההפתעות מפסיקות להיות הפתעות.</span></li>
+    <li><span><b>מסמנים את הביט והפייבוקס</b>. 2,925 ₪ בחודש יוצאים בלי תיעוד — כותבים בהערה על מה, וסוקרים ביחד בסוף החודש. בלי זה, החיתוך של 1,225 ₪ שם לא ישרוד.</span></li>
+  </ol>
+</section>
+
+<footer>
+  <p><b>מקור.</b> ארטיפקט "המיקרו של הכסף" — נתוני RiseUp למרץ–אוגוסט 2026,
+     1,297 עסקאות הוצאה בסך 264,143 ₪, אחרי הסרת חיובי כרטיס מרוכזים שמייצרים ספירה כפולה.
+     כל סכום כאן הוא ממוצע חודשי על פני ששת החודשים, מעוגל לשקל.</p>
+  <p><b>הנחות.</b> הכנסה של 36,000 ₪ נטו לחשבון, קבועה, ללא הכנסות נוספות.
+     תפארת האחוזה (3,833 ₪) מוגדרת כהתחייבות סגורה ולכן איננה בתוכנית החיתוך.
+     ההעברות בביט, פייבוקס ומזומן (2,925 ₪) הוגדרו כהוצאות משתנות ברובן.</p>
+  <p><b>מגבלות.</b> החלון מרץ–אוגוסט כולל את הקיץ, ולכן סעיפי הנופש והקייטנות
+     מוטים כלפי מעלה לעומת שנה מלאה. 691 ₪ בחודש נשארו בסעיף "דורש זיהוי"
+     ולא נכללו בחיתוך. אומדן ההלוואה נגזר מיחס הקרן לריבית בתדפיס ולא ממסמך בנקאי —
+     כדאי לאמת מול הבנק לפני שמסתמכים עליו.</p>
+</footer>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const INCOME = 36000, SPEND = 44024;
+
+const STAGES = [
+  {
+    n: "①", title: "בלי לוותר על שום דבר", when: "השבוע",
+    intro: "כפילויות, מנויים רדומים ותמחור שלא נבדק. אף אחד בבית לא ירגיש שמשהו השתנה.",
+    rows: [
+      ["משלוחי Wolt", "2,110 ₪ ב־91 הזמנות → שתי הזמנות בחודש", 2110, 700],
+      ["כפילות טלוויזיה", "YES 184 ₪ + HOT 77 ₪ + Netflix 29 ₪ → ספק אחד", 290, 110],
+      ["כלי AI", "ביטול Akool 164 ₪ ו־ChatGPT 40 ₪, השארת Claude", 389, 185],
+      ["חשבון Apple", "iCloud ו־App Store, 27 חיובים — ניקוי מנויים רדומים", 203, 120],
+      ["מכרז ביטוחים", "ביטוח רכב 825 ₪ + חיים ובריאות 557 ₪ — השוואת מחיר, לא ביטול", 1382, 1132],
+      ["עמלות בנק וכרטיס", "דמי כרטיס בשני בנקים", 24, 0]
+    ]
+  },
+  {
+    n: "②", title: "שינוי הרגלים", when: "לאורך החודש",
+    intro: "כאן מרגישים את השינוי. השורה האחרונה היא תוספת ולא חיסכון — כשמפסיקים להזמין בחוץ, קניות הסופר עולות, וזה חייב להיות בתוך החשבון.",
+    rows: [
+      ["בשר אצל הקצב", "1,894 ₪ ב־14 קניות; מיטאון לבדו 9,768 ₪ בחצי שנה", 1894, 1000],
+      ["אכילה בחוץ", "מסעדות 1,535 + מזון מהיר 568 + מאפיות 758 + קפה 327", 3188, 1700],
+      ["אופנה", "בוטיקים 809 + רשתות 622 + דלתא 231 + הנעלה 62 + ילדים 37", 1761, 700],
+      ["הזמנות אונליין", "AliExpress 308 ₪ + הזמנות אחרות 364 ₪", 672, 250],
+      ["טיפוח", "תמרוקים 348 ₪ + מספרה 145 ₪", 494, 280],
+      ["תוספת לקניות בסופר", "האוכל שיחליף את המשלוחים והמסעדות", 1586, 2186]
+    ]
+  },
+  {
+    n: "③", title: "דורש החלטה משותפת", when: "שיחה אחת",
+    intro: "לא ויתורים קטנים אלא בחירות: על מה יוצא כסף שאי אפשר לעקוב אחריו, ועל חפיפה בין שלושה מנויים שעושים אותו דבר.",
+    rows: [
+      ["העברות לא ממופות", "ביט 1,217 + נייד 567 + פייבוקס 532 + מזומן 376 + הטבות 232", 2925, 1700],
+      ["חפיפת ספורט ומים", "בריכת שילת 558 + חדר כושר 299 + „הכל לים” 540 — לבחור אחד", 1397, 600],
+      ["נופש וחופשות", "מונע מ־Airbnb 4,590 ₪ במאי → קופת ייעוד של 400 ₪ בחודש", 1028, 400],
+      ["חשמל, אלקטרוניקה וכלי בית", "שקם, באג וכתר — קופת ייעוד וכלל המתנה של 30 יום", 897, 500],
+      ["ציוד ספורט", "א.ב. ספורט 1,474 ₪ ב־23 קניות", 306, 120],
+      ["רכב — שוליים", "חנות הנוחות ב־Yellow 130 ₪ + מוניות Gett 83 ₪", 213, 60],
+      ["מתנות ופרחים", "", 160, 100]
+    ]
+  }
+];
+
+const CATS = [
+  ["דיור",    10118, 397,  false],
+  ["אוכל",     8993, 3192, false],
+  ["חינוך",    5565, 0,    true],
+  ["חוב",      3401, 0,    true],
+  ["רכב",      2987, 303,  false],
+  ["העברות",   2925, 1225, false],
+  ["פנאי",     2916, 1611, false],
+  ["אופנה",    1761, 1061, false],
+  ["מנויים",   1178, 467,  false],
+  ["רפואה",     950, 0,    false],
+  ["לא מזוהה",  691, 0,    false],
+  ["אונליין",   672, 422,  false]
+];
+
+const nf = v => Math.round(v).toLocaleString("he-IL");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---- stage totals ---- */
+const stageCut = st => st.rows.reduce((a, r) => a + (r[2] - r[3]), 0);
+const CUTS = STAGES.map(stageCut);
+const TOTAL_CUT = CUTS.reduce((a, b) => a + b, 0);
+
+/* ---- 1. gap chart ---- */
+(function gap(){
+  const overshoot = SPEND - INCOME;
+  document.getElementById("gapchart").innerHTML =
+    `<div class="gapbar" role="img" aria-label="הוצאה של ${nf(SPEND)} שקל מול הכנסה של ${nf(INCOME)} שקל, חריגה של ${nf(overshoot)} שקל">
+       <div class="gapfill" style="width:${(INCOME / SPEND * 100).toFixed(2)}%"></div>
+       <div class="gapover" style="inset-inline-start:${(INCOME / SPEND * 100).toFixed(2)}%;
+            width:${(overshoot / SPEND * 100).toFixed(2)}%"></div>
+     </div>
+     <div class="gaplabels">
+       <span class="gaplab"><i class="swatch" style="background:var(--gain)"></i>
+         מכוסה מההכנסה <b class="n">${nf(INCOME)} ₪</b></span>
+       <span class="gaplab"><i class="swatch" style="background:var(--drain)"></i>
+         חורג מההכנסה <b class="n">${nf(overshoot)} ₪</b> בחודש</span>
+     </div>`;
+})();
+
+/* ---- 2. stage tables ---- */
+(function stages(){
+  document.getElementById("stages").innerHTML = STAGES.map((st, i) => {
+    const rows = st.rows.map(([name, note, now, after]) => {
+      const diff = now - after;
+      return `<tr class="${diff < 0 ? "neg" : ""}">
+        <td><span class="item">${esc(name)}</span>${note ? `<span class="note">${esc(note)}</span>` : ""}</td>
+        <td class="num">${nf(now)}</td>
+        <td class="num">${nf(after)}</td>
+        <td class="num cut"><span class="ltr">${diff < 0 ? "+" : "\u2212"}${nf(Math.abs(diff))}</span></td>
+      </tr>`;
+    }).join("");
+    return `<div class="stage">
+      <div class="stage-head"><span class="step">${st.n}</span>
+        <h3>${esc(st.title)}</h3><span class="when">${esc(st.when)}</span></div>
+      <p class="intro">${esc(st.intro)}</p>
+      <div class="tblwrap"><table>
+        <thead><tr><th>סעיף</th><th class="num">היום</th><th class="num">יעד</th><th class="num">חיסכון</th></tr></thead>
+        <tbody>${rows}
+          <tr class="sum"><td>סך שלב ${st.n}</td><td class="num"></td><td class="num"></td>
+            <td class="num cut"><span class="ltr">\u2212${nf(CUTS[i])}</span> ₪</td></tr>
+        </tbody>
+      </table></div>
+    </div>`;
+  }).join("");
+})();
+
+/* ---- 3. ladder ---- */
+(function ladder(){
+  const steps = [
+    ["היום", "ללא שינוי", SPEND],
+    ["אחרי ①", "כפילויות ומנויים", SPEND - CUTS[0]],
+    ["אחרי ①+②", "בתוספת הרגלי אוכל וקניות", SPEND - CUTS[0] - CUTS[1]],
+    ["אחרי ①+②+③", "התוכנית המלאה", SPEND - TOTAL_CUT]
+  ];
+  const MAX = SPEND;
+  const incPct = INCOME / MAX * 100;
+  const mark = `<span class="incmark" style="inset-inline-start:${incPct.toFixed(2)}%"></span>`;
+  const rows = steps.map(([label, sub, val], i) => {
+    const pct = val / MAX * 100;
+    const d = INCOME - val;
+    const cls = i === 0 ? "is-first" : (i === steps.length - 1 ? "is-last" : "");
+    return `<div class="lrow">
+      <div class="lname"><b>${esc(label)}</b>${esc(sub)}</div>
+      <div class="ltrack">
+        <div class="lfill ${cls}" style="width:${pct.toFixed(2)}%"></div>${mark}
+      </div>
+      <div class="lval">${nf(val)} ₪
+        <span class="ldelta ${d < 0 ? "bad" : "good"}"><span class="ltr">${d < 0 ? "\u2212" : "+"}${nf(Math.abs(d))}</span> ₪ מול ההכנסה</span>
+      </div></div>`;
+  }).join("");
+  document.getElementById("ladder").innerHTML = rows +
+    `<div class="lrow lfoot"><div></div>
+       <div class="ltrack"><span class="inclab" style="inset-inline-start:${incPct.toFixed(2)}%">הכנסה ${nf(INCOME)} ₪</span></div>
+       <div></div></div>`;
+})();
+
+/* ---- 4. category chart ---- */
+(function cats(){
+  const MAX = Math.max(...CATS.map(c => c[1]));
+  const rows = CATS.map(([name, now, cut, locked]) => {
+    const keep = now - cut;
+    const kw = keep / MAX * 100, cw = cut / MAX * 100;
+    const label = locked ? "נעול" : (cut ? `נחתך ${nf(cut)}` : "ללא שינוי");
+    return `<button class="crow" type="button"
+        data-tip="${esc(name)}|${nf(now)}|${nf(keep)}|${nf(cut)}|${locked ? "1" : ""}">
+      <span class="cname">${esc(name)}</span>
+      <span class="ctrack">
+        <span class="ckeep${locked ? " locked" : ""}" style="width:${kw.toFixed(2)}%"></span>
+        ${cut ? `<span class="ccut" style="width:${cw.toFixed(2)}%"></span>` : ""}
+      </span>
+      <span class="cval"><b>${nf(now)} ₪</b> · ${esc(label)}</span>
+    </button>`;
+  }).join("");
+  document.getElementById("cats").innerHTML = rows +
+    `<div class="legend">
+      <span><i class="swatch" style="background:var(--track)"></i>נשאר</span>
+      <span><i class="swatch" style="background:var(--gain)"></i>נחתך</span>
+      <span><i class="swatch" style="background:var(--locked)"></i>התחייבות נעולה</span>
+    </div>`;
+
+  const tip = document.getElementById("tip");
+  const show = (el, x, y) => {
+    const [name, now, keep, cut, locked] = el.dataset.tip.split("|");
+    tip.innerHTML = `<b>${esc(name)}</b><br>
+      <span class="tn">${now} ₪</span> היום · <span class="tn">${keep} ₪</span> אחרי` +
+      (locked ? "<br>התחייבות נעולה — לא בתוכנית" : (cut !== "0" ? `<br>חיסכון <span class="tn">${cut} ₪</span> בחודש` : "<br>ללא שינוי בתוכנית"));
+    tip.classList.add("on");
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - r.width - 8)) + "px";
+    tip.style.top = Math.max(8, y - r.height - 12) + "px";
+  };
+  const hide = () => tip.classList.remove("on");
+  document.querySelectorAll(".crow").forEach(el => {
+    el.addEventListener("mousemove", e => show(el, e.clientX, e.clientY));
+    el.addEventListener("mouseleave", hide);
+    el.addEventListener("focus", () => {
+      const r = el.getBoundingClientRect();
+      show(el, r.left + 40, r.top + 10);
+    });
+    el.addEventListener("blur", hide);
+  });
+})();
+</script>
