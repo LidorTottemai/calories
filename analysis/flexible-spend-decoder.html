@@ -1,0 +1,564 @@
+<title>25,831 ₪ הגמישים</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#EDEEF2; --surface:#FFFFFF; --surface-2:#E3E5EC; --track:#D3D7E1;
+    --ink:#16192A; --ink-2:#545A6E; --ink-3:#7C8296;
+    --rule:#D6D9E2; --rule-strong:#BFC3D0;
+    --gain:#0E7BA3; --gain-soft:#DDEBF3;
+    --drain:#B24420; --drain-soft:#F5E2DA;
+    --locked:#8B5AA8; --locked-soft:#EDE3F3;
+    --shadow:rgba(22,25,42,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  body{direction:rtl; margin:0; background:var(--ground); color:var(--ink);
+    font-family:"Assistant","Arial Hebrew",system-ui,sans-serif; font-size:16.5px;
+    line-height:1.62; -webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Suez One","Frank Ruhl Libre",Georgia,serif; font-weight:400;
+           text-wrap:balance; margin:0; letter-spacing:-.005em}
+  h1{font-size:clamp(30px,5.2vw,46px); line-height:1.14}
+  h2{font-size:clamp(21px,2.9vw,27px); line-height:1.3}
+  h3{font-size:19px; line-height:1.3}
+  p{margin:0}
+  .n{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+     font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .ltr{direction:ltr; unicode-bidi:isolate; display:inline-block}
+
+  .wrap{max-width:1020px; margin:0 auto; padding:clamp(22px,4.5vw,54px) clamp(15px,4vw,38px) 80px}
+  .prose{max-width:66ch}
+  .prose p + p{margin-top:14px}
+  .eyebrow{font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+           color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+  section{margin-top:clamp(40px,5.5vw,64px)}
+  .sec-head{display:flex; flex-direction:column; gap:7px; margin-bottom:20px}
+  .sec-head > p{color:var(--ink-2); font-weight:300; max-width:68ch; font-size:15.5px}
+
+  header{display:flex; flex-direction:column; gap:14px; padding-bottom:24px;
+         border-bottom:2px solid var(--ink)}
+  .lede{max-width:65ch; color:var(--ink-2); font-size:18.5px; font-weight:300}
+  .lede strong{font-weight:600; color:var(--ink)}
+  .backlink{font-size:13.5px; color:var(--gain); text-decoration:none;
+            border-bottom:1px solid currentColor; align-self:flex-start; font-weight:600}
+  .backlink:hover{color:var(--ink)}
+  .backlink:focus-visible{outline:2px solid var(--gain); outline-offset:3px}
+
+  .strip{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+         gap:1px; background:var(--rule); border:1px solid var(--rule); margin-top:24px}
+  .stat{background:var(--surface); padding:15px 17px; display:flex; flex-direction:column; gap:1px}
+  .stat .k{font-size:12.5px; color:var(--ink-3)}
+  .stat .v{font-family:"Suez One",serif; font-size:25px; line-height:1.2;
+           font-variant-numeric:tabular-nums}
+  .stat .t{font-size:12.5px; color:var(--ink-3); font-weight:300}
+  .stat.good .v{color:var(--gain)}
+
+  /* ---------- ranked overview ---------- */
+  .rank{border:1px solid var(--rule); background:var(--surface); padding:16px 18px}
+  .rrow{display:grid; grid-template-columns:minmax(90px,132px) 1fr minmax(124px,auto);
+        gap:13px; align-items:center; padding-block:6px; width:100%; text-align:start;
+        background:none; border:none; font:inherit; color:inherit; cursor:default}
+  .rrow:focus-visible{outline:2px solid var(--gain); outline-offset:2px}
+  .rname{font-size:14px; font-weight:600}
+  .rtrack{display:flex; gap:2px; height:18px}
+  .rkeep{background:var(--track); border-radius:2px}
+  .rcut{background:var(--gain); border-radius:2px}
+  .rval{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-3);
+        font-variant-numeric:tabular-nums; white-space:nowrap; text-align:end}
+  .rval b{color:var(--ink); font-weight:500}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; padding-block:12px 3px; margin-block-start:8px;
+          border-block-start:1px solid var(--rule); font-size:13px; color:var(--ink-2)}
+  .legend span{display:flex; align-items:center; gap:6px}
+  .swatch{width:10px; height:10px; border-radius:2px; flex:none}
+
+  /* ---------- scatter ---------- */
+  .scatter{border:1px solid var(--rule); background:var(--surface); padding:14px 10px 8px;
+           overflow-x:auto}
+  .scatter svg{display:block; min-width:660px; width:100%; height:auto;
+           direction:ltr; unicode-bidi:isolate}
+  .sx-axis,.sy-axis{stroke:var(--rule-strong); stroke-width:1}
+  .sgrid{stroke:var(--rule); stroke-width:1; stroke-dasharray:3 4}
+  .stick{fill:var(--ink-3); font-size:11px; font-family:"IBM Plex Mono",monospace}
+  .saxt{fill:var(--ink-2); font-size:12.5px; font-family:"Assistant",sans-serif; font-weight:600}
+  .squad{fill:var(--ink-3); font-size:11.5px; font-family:"Assistant",sans-serif}
+  .sdot{fill:var(--gain); fill-opacity:.30; stroke:var(--gain); stroke-width:1.5}
+  .sdot.hi{fill-opacity:.62}
+  .slab{fill:var(--ink); font-size:12.5px; font-family:"Assistant",sans-serif; font-weight:600}
+  .slab tspan{fill:var(--ink-3); font-weight:400; font-size:11.5px}
+
+  /* ---------- decoder blocks ---------- */
+  .blocks{display:flex; flex-direction:column; gap:14px}
+  .blk{border:1px solid var(--rule); background:var(--surface)}
+  .blk.flag{border-inline-start:3px solid var(--drain)}
+  .bhead{display:grid; grid-template-columns:auto 1fr auto; gap:8px 14px; align-items:baseline;
+         padding:16px 18px 10px}
+  .brank{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
+         padding-block-start:5px}
+  .bmeta{display:block; font-size:12.5px; color:var(--ink-3); font-weight:300; margin-top:2px;
+         font-family:"IBM Plex Mono",monospace; letter-spacing:-.01em}
+  .bfig{text-align:end; white-space:nowrap}
+  .bmo{font-family:"Suez One",serif; font-size:22px; font-variant-numeric:tabular-nums;
+       display:block; line-height:1.2}
+  .bpct{font-size:12px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+  .bwhat{padding:0 18px 14px; font-size:15px; color:var(--ink-2); font-weight:300; max-width:72ch}
+  .bwhat b{font-weight:600; color:var(--ink)}
+  .bwhat code{font-family:"IBM Plex Mono",monospace; font-size:12.5px; background:var(--surface-2);
+              padding:1px 5px; border-radius:2px; direction:ltr; display:inline-block}
+
+  .mlist{border-block-start:1px solid var(--rule)}
+  .mrow{display:grid; grid-template-columns:minmax(130px,1.5fr) minmax(60px,1fr) 92px 66px;
+        gap:11px; align-items:center; padding:7px 18px; font-size:13.5px}
+  .mrow + .mrow{border-block-start:1px solid var(--rule)}
+  .mname{font-weight:500}
+  .mtrack{height:7px; background:var(--surface-2); border-radius:2px; overflow:hidden}
+  .mfill{height:100%; background:var(--ink-3); opacity:.5; border-radius:2px}
+  .mtot{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+        text-align:end; white-space:nowrap; color:var(--ink)}
+  .mn{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
+      text-align:end; white-space:nowrap}
+  .more{display:block; width:100%; padding:9px 18px; background:var(--surface-2); border:none;
+        border-block-start:1px solid var(--rule); font:inherit; font-size:13px; color:var(--ink-2);
+        cursor:pointer; text-align:start}
+  .more:hover{color:var(--ink)}
+  .more:focus-visible{outline:2px solid var(--gain); outline-offset:-2px}
+
+  .verdict{display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center;
+           padding:12px 18px; background:var(--surface-2); border-block-start:1px solid var(--rule)}
+  .vcut{font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:500; color:var(--gain);
+        font-variant-numeric:tabular-nums}
+  .vtar{font-size:13.5px; color:var(--ink-2)}
+  .vtar b{font-family:"IBM Plex Mono",monospace; color:var(--ink); font-weight:500}
+  .chip{font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:2px;
+        letter-spacing:.02em; margin-inline-start:auto}
+  .chip.easy{background:var(--gain-soft); color:var(--gain)}
+  .chip.mid{background:var(--surface); color:var(--ink-2); border:1px solid var(--rule-strong)}
+  .chip.hard{background:var(--locked-soft); color:var(--locked)}
+  .chip.none{background:var(--drain-soft); color:var(--drain)}
+
+  /* ---------- apple panel ---------- */
+  .apple{border:1px solid var(--rule-strong); background:var(--surface); margin:0 18px 16px;
+         padding:18px}
+  .apple h4{font-family:"Suez One",serif; font-weight:400; font-size:17px; margin:0 0 4px}
+  .apple p{font-size:14.5px; color:var(--ink-2); font-weight:300; max-width:68ch}
+  .apple p + p{margin-top:10px}
+  .apple b{color:var(--ink); font-weight:600}
+  .amonths{display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin:16px 0 4px;
+           align-items:end; height:96px}
+  .abar{display:flex; flex-direction:column; justify-content:flex-end; gap:5px; height:100%}
+  .abar i{background:var(--gain); border-radius:2px 2px 0 0; display:block}
+  .abar.peak i{background:var(--drain)}
+  .abar span{font-size:11px; color:var(--ink-3); text-align:center;
+             font-family:"IBM Plex Mono",monospace}
+  .abar em{font-style:normal; font-size:11.5px; text-align:center; color:var(--ink-2);
+           font-family:"IBM Plex Mono",monospace}
+  .steps{list-style:none; margin:16px 0 0; padding:0; counter-reset:st;
+         display:flex; flex-direction:column; gap:10px}
+  .steps li{counter-increment:st; display:grid; grid-template-columns:auto 1fr; gap:11px;
+            font-size:14.5px; align-items:baseline}
+  .steps li::before{content:counter(st); font-family:"IBM Plex Mono",monospace; font-size:12px;
+                    color:var(--ink-3)}
+  .steps b{font-weight:600}
+  .path{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2);
+        background:var(--surface-2); padding:2px 7px; border-radius:2px; display:inline-block;
+        margin-top:3px}
+
+  .callout{border-inline-start:3px solid var(--gain); background:var(--gain-soft);
+           padding:16px 19px; margin-block-start:22px; max-width:68ch}
+  .callout .t{font-weight:700; margin-block-end:4px}
+  .callout p{font-size:15px}
+
+  #tip{position:fixed; z-index:9; pointer-events:none; background:var(--ink); color:var(--ground);
+       padding:8px 11px; border-radius:3px; font-size:13px; line-height:1.5; max-width:250px;
+       box-shadow:0 4px 14px var(--shadow); opacity:0; transition:opacity .12s; left:0; top:0}
+  #tip.on{opacity:1}
+  #tip .tn{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+
+  footer{margin-top:56px; padding-top:18px; border-top:1px solid var(--rule);
+         font-size:13px; color:var(--ink-3); font-weight:300;
+         display:flex; flex-direction:column; gap:7px; max-width:78ch}
+  footer b{font-weight:600; color:var(--ink-2)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:640px){
+    .mrow{grid-template-columns:1fr 92px 60px}
+    .mrow .mtrack{display:none}
+    .rrow{grid-template-columns:minmax(78px,1fr) 1.3fr}
+    .rrow .rval{grid-column:1/-1; text-align:start}
+    .bhead{grid-template-columns:auto 1fr}
+    .bfig{grid-column:1/-1; text-align:start}
+  }
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">RiseUp · מרץ–אוגוסט 2026 · 411 בתי עסק</p>
+  <h1>25,831 ₪ הגמישים</h1>
+  <p class="lede">
+    מתוך 44,024 ₪ בחודש, <strong>18,193 ₪ נעולים</strong> — דיור, ארנונה, חינוך, החזר ההלוואה.
+    הדף הזה מפרק את <strong>מה שנשאר</strong>: 16 בלוקים, בית עסק אחר בית עסק,
+    מה כל אחד באמת קונה וכמה ממנו אפשר להחזיר.
+  </p>
+  <a class="backlink" href="https://claude.ai/code/artifact/49a78fdb-1afe-4482-a034-38577828ef75">← לדף התוכנית: הפער של 8,024 ₪</a>
+</header>
+
+<div class="strip">
+  <div class="stat"><span class="k">ההוצאה הגמישה</span><span class="v n">25,831 ₪</span><span class="t">59% מכלל ההוצאה</span></div>
+  <div class="stat"><span class="k">עסקאות בחודש</span><span class="v n">169</span><span class="t">5.6 ביום, כולל שבתות</span></div>
+  <div class="stat good"><span class="k">בר־חיתוך</span><span class="v n">9,433 ₪</span><span class="t">36% מהגמיש</span></div>
+  <div class="stat"><span class="k">אחרי החיתוך</span><span class="v n">34,591 ₪</span><span class="t">עודף 1,409 ₪</span></div>
+</div>
+
+<section>
+  <div class="sec-head">
+    <h2>שתי הצורות של הכסף</h2>
+    <p>כל נקודה היא הרגל אחד. ככל שהיא ימינה — פחות פעמים בחודש; ככל שהיא גבוהה —
+      יותר כסף בכל פעם (הסקאלה האנכית לוגריתמית). גודל העיגול הוא הסכום החודשי.
+      זה ההסבר הכי קצר למה שקורה אצלכם: הכסף יוצא בשתי דרכים הפוכות לגמרי,
+      ולכל אחת צריך פתרון אחר.</p>
+  </div>
+  <div class="scatter" id="scatter"></div>
+  <div class="callout">
+    <p class="t">שמאל למטה זה הרגל. ימין למעלה זו החלטה.</p>
+    <p>מאפיות: 17 קניות בחודש ב־45 ₪ כל אחת. הקצב: 2.3 קניות ב־812 ₪ כל אחת.
+      שתיהן כ־1,900 ו־758 ₪ בחודש, אבל את הראשונה עוצרים רק בשינוי שגרה יומית,
+      ואת השנייה בשיחה אחת לפני הקנייה. אל תנסו לתקוף אותן באותה שיטה.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>16 הבלוקים, לפי גודל</h2>
+    <p>החלק הכהה הוא מה שנשאר אחרי החיתוך; הטורקיז הוא מה שחוזר אליכם.
+      ארבעת הבלוקים הראשונים הם 68% מכל ההוצאה הגמישה.</p>
+  </div>
+  <div class="rank" id="rank"></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>מה כל בלוק באמת קונה</h2>
+    <p>לכל בלוק: כמה עסקאות בחודש, כמה שקלים בעסקה ממוצעת, ומי בתי העסק שמאחוריו.
+      "טיקט" = הסכום הממוצע בכל חיוב — הוא שמסביר אם מדובר בהרגל יומי או ברכישה גדולה.</p>
+  </div>
+  <div class="blocks" id="blocks"></div>
+</section>
+
+<footer>
+  <p><b>שיטה.</b> כל הסכומים הם ממוצע חודשי על פני מרץ–אוגוסט 2026, מנתוני RiseUp.
+     מספר העסקאות והטיקט הממוצע מחושבים מהתדפיס עצמו (סה"כ חצי־שנתי ÷ מספר החיובים),
+     לא מהערכה. סכום 16 הבלוקים הוא 25,832 ₪ — ההפרש מ־25,831 הוא עיגול לשקל.</p>
+  <p><b>מה שלא ידוע.</b> תיאור בית עסק בתדפיס בנקאי לא תמיד מזהה מה נקנה.
+     בלוק "לא מזוהה" (691 ₪) ובלוק ההעברות (2,925 ₪) הם בדיוק זה, וכך גם
+     <span dir="ltr">APPLE.COM/BILL</span> ו־<span dir="ltr">PAYPAL *TKN6</span>.
+     לא ניחשתי שמות — סימנתי אותם ונתתי את הדרך לזהות.</p>
+  <p><b>הנחות.</b> הכנסה 36,000 ₪ נטו. כלי ה־AI, AWS, JetBrains ו־Canva סווגו כהוצאה
+     פרטית לפי מה שמסרתם, ולכן נספרו כבר־חיתוך במלואם. היעדים לאוכל, לביגוד
+     ולסופרפארם מכוילים למשק בית של זוג ו־1–2 ילדים קטנים.</p>
+</footer>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* total6, n = over the six months. mo = monthly average. */
+const BLOCKS = [
+  { name:"אוכל", mo:8993, n:597, target:5801, diff:"mid",
+    what:"597 חיובים בחצי שנה — <b>3.3 קניות אוכל בכל יום</b>. הבלוק מתחלק לשני עולמות: קנייה גדולה ומתוכננת אצל הקצב (812 ₪ בממוצע, פעמיים בחודש), וזרם בלתי פוסק של קניות קטנות — מאפייה, מכולת, קפה — שאף אחת מהן לא מרגישה כמו הוצאה.",
+    subs:[["משלוחי Wolt",12661,91],["בשר אצל הקצב",11363,14],["מסעדות",9212,97],["סיטי מרקט (המכולת)",4818,87],["סופרמרקטים אחרים",4700,57],["מאפיות ולחם",4549,101],["מזון מהיר",3411,51],["קפה, גלידה ומתוקים",1962,45],["פיצוחים, ממתקים ושוק",990,47],["מזון — שונות",288,7]] },
+
+  { name:"רכב", mo:2987, n:121, target:2684, diff:"mid",
+    what:"רכב חשמלי או היברידי — יש גם דלק (416 ₪) וגם טעינה (118 ₪). רוב הבלוק הוא עלות אמיתית של בעלות: ביטוח, רישוי, מוסך. הדברים שכן ניתנים לחיתוך קטנים: חנות הנוחות ב־Yellow (130 ₪ — זה לא דלק, זה קפה וחטיפים) ומוניות Gett.",
+    subs:[["מוסך, טיפולים ואביזרים",5258,23],["ביטוח רכב — ליברה",4951,16],["רישוי ואגרות",2632,13],["דלק",2494,13],["חנות נוחות ב-Yellow",780,7],["טעינת רכב חשמלי",709,12],["חניה",604,32],["מוניות — Gett",495,5]] },
+
+  { name:"העברות", mo:2925, n:52, target:1700, diff:"hard", flag:true,
+    what:"<b>52 העברות ב־338 ₪ בממוצע, ואי אפשר לדעת על מה.</b> בתדפיס כתוב רק \"העברה ב-BIT\". שבע ההעברות מהנייד גדולות במיוחד — 486 ₪ כל אחת. אמרתם שרובן הוצאות משתנות, ולכן זה מאגר חיסכון אמיתי — אבל רק אם כל העברה מקבלת הערה בזמן אמת. בלי זה, היעד לא ישרוד חודש.",
+    subs:[["העברות בביט",7304,24],["העברות מהנייד",3404,7],["פייבוקס",3195,11],["משיכות מזומן",2258,2],["טעינת כרטיס הטבות",1390,8]] },
+
+  { name:"פנאי", mo:2916, n:79, target:1305, diff:"hard",
+    what:"שתי תגליות כאן. ראשית, <b>שני מנויי חדר כושר במקביל</b> — ספייס (11 חיובים) ומור פיט (3); באוגוסט שניהם רצו יחד. שנית, <b>\"הכל לים\" מחייב בדיוק 540 ₪ בכל אחד מששת החודשים</b> — סכום זהה בדיוק כל חודש הוא חתימה של עסקת תשלומים, לא של קנייה חוזרת. שווה לברר מתי היא נגמרת; ייתכן שהיא נופלת מעצמה.",
+    subs:[["נופש וחופשות",6168,21],["מנוי בריכה — שילת",3350,2],["\"הכל לים\"",3240,6],["ציוד ספורט",1838,24],["חדר כושר (שניים)",1794,14],["דיוטי פרי",566,3],["ספרים",380,6],["נרגילות",160,3]] },
+
+  { name:"אופנה", mo:1761, n:54, target:700, diff:"mid",
+    what:"54 קניות בחצי שנה — <b>9 בחודש</b>, 196 ₪ בממוצע. הבולטת: 1,900 ₪ בעסקה בודדת אצל אריאל זכריה. לשם השוואה, ביגוד ילדים הוא 222 ₪ בכל חצי השנה — כלומר כמעט כל הבלוק הזה הוא ביגוד מבוגרים.",
+    subs:[["בוטיקים ואופנה אחרת",4852,20],["רשתות אופנה (פוקס, קסטרו, רנואר…)",3733,22],["הלבשה תחתונה — דלתא",1387,5],["הנעלה",371,5],["ביגוד ילדים",222,2]] },
+
+  { name:"מנויים", mo:1178, n:91, target:604, diff:"easy", apple:true,
+    what:"91 חיובים בחצי שנה מ־12 שירותים. שלוש כפילויות: <b>שני ספקי טלוויזיה</b> (YES ו־HOT רצים יחד), <b>שלושה כלי AI</b>, ו־Akool שגבה 945 ₪ ביולי לבדו בעשרה חיובים — חתימה קלאסית של חיוב לפי שימוש שיצא משליטה. מכיוון שאמרתם שכלי העבודה פרטיים ולא עסקיים, AWS, JetBrains, Canva ו־Udemy (108 ₪) הם בר־חיתוך מלא.",
+    subs:[["Apple",1215,27],["AI — Claude",1112,3],["טלוויזיה — YES",1106,6],["AI — Akool",982,10],["תוכנה וענן (AWS, Canva, JetBrains, Udemy)",647,14],["סלולר — פלאפון",550,7],["טלוויזיה — HOT",460,3],["RiseUp",330,6],["AI — ChatGPT",242,4],["Netflix (כבר הופסק)",174,2],["Google One",132,6],["סלולר — HOT Mobile",118,3]] },
+
+  { name:"רפואה", mo:950, n:57, target:700, diff:"mid",
+    what:"<b>סופרפארם: 36 ביקורים בחצי שנה, 124 ₪ בכל ביקור — שישה ביקורים בחודש</b>, בשמונה תיאורי סניפים שונים שמסתירים כמה זה בעצם. זו לא הוצאה רפואית; זו קנייה חופשית שנכנסת דרך בית מרקחת. עם ילדים קטנים חלק אמיתי הוא חיתולים ומגבונים, ולכן היעד 700 ₪ ולא נמוך מזה.",
+    subs:[["בתי מרקחת — סופרפארם",4481,36],["קופת חולים ומרפאות",1218,21]] },
+
+  { name:"דיור — החלק הגמיש", mo:897, n:19, target:500, diff:"mid",
+    what:"לא חשבון החשמל — <b>מכשירים וציוד</b>. שקם אלקטריק 2,045 ₪, באג 827 ₪, און־ליין סלולארי 350 ₪, וכתר פלסטיק 1,466 ₪ בשתי עסקאות. רובם נקנו באילת במאי, כלומר אלה קניות חופשה ולא צורך שהתעורר בבית. הפתרון הוא קופת ייעוד וכלל המתנה של 30 יום, לא ויתור.",
+    subs:[["חשמל ואלקטרוניקה",3464,9],["ציוד וכלי בית",1918,10]] },
+
+  { name:"לא מזוהה", mo:691, n:18, target:null, diff:"none", flag:true,
+    what:"<b>אין לי דרך לדעת מה אלה — וגם ל־RiseUp אין.</b> 18 חיובים ב־4,148 ₪ עם שמות שלא מסגירים כלום. שלושת הראשונים לבדם הם 2,903 ₪. הדרך היחידה: לפתוח את התדפיס, להסתכל בתאריך של כל אחד ולזכור מה קרה באותו יום. עד שזה לא קורה, אי אפשר לתקצב אותם.",
+    subs:[["מטריקס",1324,3],["גאיה",828,2],["טירולר",751,1],["קיי אס פי צומת קריית",339,1],["מודיעין עזריאלי",260,1],["מקס רמלה",193,1],["מעיין צלנר הפקות",110,1],["BOX",92,1],["בל פתאל מרקטינג",76,1],["גרפוס",76,1]] },
+
+  { name:"אונליין", mo:672, n:30, target:250, diff:"easy",
+    what:"AliExpress הוא <b>25 הזמנות ב־74 ₪ כל אחת</b> — ארבע בחודש, אף אחת לא מורגשת, ביחד 308 ₪. זה בדיוק אותו דפוס כמו ב־Apple: חיובים קטנים ואוטומטיים. <span dir=\"ltr\">PAYPAL *TKN6</span> הוא קוד סוחר של פייפאל ולא שם של חנות — צריך להיכנס לחשבון הפייפאל כדי לראות מה זה.",
+    subs:[["AliExpress",1848,25],["PAYPAL *TKN6",1070,2],["קנדיד אונליין",526,1],["GlobalE",460,1],["מקופלת",129,1]] },
+
+  { name:"חוב — החלק הגמיש", mo:551, n:5, target:null, diff:"none",
+    what:"לא החזר ההלוואה הקבוע (הוא בנעולים) אלא <b>מה שנוסף מעליו</b>: תשלום חד־פעמי של 2,300 ₪ ללאומי ביוני, ושתי קניות שנפרסו לתשלומים. אין מה לחתוך פה בדיעבד — יש כלל להמשך: לא לפרוס קנייה חדשה לתשלומים כל עוד יש גירעון.",
+    subs:[["תשלום חד־פעמי ללאומי",2300,1],["ליאור עדיקה — בתשלומים",764,2],["MAYVEN — בתשלומים",238,2]] },
+
+  { name:"טיפוח", mo:494, n:16, target:280, diff:"easy",
+    what:"רוב הבלוק הוא <b>סוחר אחד</b>: ליאור עדיקה (תמרוקים ובשמים) — 1,727 ₪ ישירות ועוד 764 ₪ שנפרסו לתשלומים ומופיעים בבלוק החוב, כלומר כ־2,491 ₪ בחצי שנה. המספרה: 7 תספורות ב־124 ₪.",
+    subs:[["ליאור עדיקה (תמרוקים)",1727,8],["מספרה — וי.ברבר",870,7],["אלקליל קוסמטיקס",364,1]] },
+
+  { name:"חיסכון והשקעות", mo:372, n:17, target:null, diff:"none", flag:true,
+    what:"<b>אל תיגעו בזה לפני שתדעו מה זה.</b> אם \"אתר קרנות\" היא קרן השתלמות או הפקדה עם הטבת מס — משאירים, ההטבה שווה יותר מהריבית. אם זו הפקדה חופשית לקרן נאמנות — אתם חוסכים בתשואה נמוכה כסף שאתם לווים באוברדראפט ביוקר, ואפשר להקפיא עד שהגירעון נסגר. בדקו, ואז תחליטו.",
+    subs:[["אתר קרנות",1911,10],["מ.ל.פ. אחזקות",215,4],["מודיעין תור השקעות",60,2],["אפי נכסים",48,1]] },
+
+  { name:"ילדים", mo:261, n:12, target:261, diff:"none",
+    what:"<b>לא נוגעים בזה.</b> 261 ₪ בחודש על מוזיאון הטבע, כפר השעשועים, באולינג וצעצועים — הסעיף הקטן ביותר בבית ואחד היחידים שקונה משהו שנשאר. לשם פרופורציה: זה פחות ממה שיוצא על מאפיות בשבועיים.",
+    subs:[["בילויים ואטרקציות",1107,6],["צעצועים",458,6]] },
+
+  { name:"מתנות ופרחים", mo:160, n:4, target:100, diff:"easy",
+    what:"ארבע מתנות בחצי שנה, 239 ₪ בממוצע — שתיים מהן שוברים. סעיף קטן וסביר; היעד רק מקטין מעט את הסכום הממוצע לשובר.",
+    subs:[["iwiw מתנות",413,1],["ביי-מי שוברי מתנה",300,1],["מתנה מושלמת",194,1],["אלסטרומריה פרחים",50,1]] },
+
+  { name:"עמלות בנק וכרטיס", mo:24, n:20, target:0, diff:"easy",
+    what:"דמי כרטיס בשני בנקים במקביל. סכום זניח, אבל זו שיחת טלפון אחת של חמש דקות שמבטלת אותו לגמרי — ולכן הוא ברשימה.",
+    subs:[["דמי כרטיס",107,6],["פועלים — דמי כרטיס",34,9],["דמי כרטיס / הנפקה",0,5]] }
+];
+
+/* frequency × ticket, for the scatter. lx/ly = label offset for the labelled ones. */
+const HABITS = [
+  {name:"מאפיות",      f:16.8, t:45,  mo:758,  hi:1, lx:0,  ly:-16},
+  {name:"מסעדות",      f:16.2, t:95,  mo:1535, hi:1, lx:-30, ly:-19},
+  {name:"Wolt",        f:15.2, t:139, mo:2110, hi:1, lx:0,  ly:-24},
+  {name:"סיטי מרקט",   f:14.5, t:55,  mo:803,  hi:1, lx:-4, ly:20},
+  {name:"סופרמרקטים",  f:9.5,  t:82,  mo:783},
+  {name:"אופנה",       f:9.0,  t:196, mo:1761, hi:1, lx:0,  ly:-20},
+  {name:"העברות",      f:8.7,  t:338, mo:2925, hi:1, lx:0,  ly:-26},
+  {name:"מזון מהיר",   f:8.5,  t:67,  mo:568},
+  {name:"קפה וגלידה",  f:7.5,  t:44,  mo:327},
+  {name:"סופרפארם",    f:6.0,  t:124, mo:747,  hi:1, lx:0,  ly:-16},
+  {name:"חניית קניון", f:5.3,  t:19,  mo:101},
+  {name:"Apple",       f:4.5,  t:45,  mo:203},
+  {name:"AliExpress",  f:4.2,  t:74,  mo:308},
+  {name:"ציוד ספורט",  f:4.0,  t:64,  mo:306},
+  {name:"מוסך",        f:3.8,  t:229, mo:876},
+  {name:"הקצב",        f:2.3,  t:812, mo:1894, hi:1, lx:-76, ly:5}
+];
+
+const APPLE_MONTHS = [["מרץ",117],["אפריל",199],["מאי",172],["יוני",169],["יולי",309],["אוגוסט",249]];
+
+const nf = v => Math.round(v).toLocaleString("he-IL");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const FLEX = BLOCKS.reduce((a, b) => a + b.mo, 0);
+const cutOf = b => b.target === null ? 0 : b.mo - b.target;
+const TOTAL_CUT = BLOCKS.reduce((a, b) => a + cutOf(b), 0) + 100; /* +100: מכרז ביטוחי חיים/בריאות */
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById("tip");
+function tipOn(html, x, y){
+  tip.innerHTML = html; tip.classList.add("on");
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - r.width - 8)) + "px";
+  tip.style.top = Math.max(8, y - r.height - 12) + "px";
+}
+const tipOff = () => tip.classList.remove("on");
+
+/* ---------- 1. scatter ---------- */
+(function scatter(){
+  const W = 780, H = 430, R = 706, L = 62, T = 26, B = 348;   /* R = right edge (axis start) */
+  const FMIN = 1.6, FMAX = 18, TMIN = 15, TMAX = 1100;
+  const lg = v => Math.log10(v);
+  const px = f => R - (f - FMIN) / (FMAX - FMIN) * (R - L);
+  const py = t => B - (lg(t) - lg(TMIN)) / (lg(TMAX) - lg(TMIN)) * (B - T);
+  const rad = mo => Math.max(3.4, Math.sqrt(mo) / 3.1);
+
+  const yticks = [20, 50, 100, 200, 500, 1000];
+  const xticks = [4, 8, 12, 16];
+
+  const grid = yticks.map(v =>
+    `<line class="sgrid" x1="${L}" x2="${R}" y1="${py(v).toFixed(1)}" y2="${py(v).toFixed(1)}"></line>
+     <text class="stick" x="${R + 8}" y="${(py(v) + 4).toFixed(1)}" text-anchor="start">${v}</text>`).join("");
+
+  const xt = xticks.map(v =>
+    `<text class="stick" x="${px(v).toFixed(1)}" y="${B + 20}" text-anchor="middle">${v}</text>`).join("");
+
+  const dots = HABITS.map((h, i) =>
+    `<circle class="sdot${h.hi ? " hi" : ""}" data-i="${i}" cx="${px(h.f).toFixed(1)}"
+       cy="${py(h.t).toFixed(1)}" r="${rad(h.mo).toFixed(1)}"></circle>`).join("");
+
+  const labs = HABITS.filter(h => h.hi).map(h =>
+    `<text class="slab" x="${(px(h.f) + (h.lx || 0)).toFixed(1)}"
+       y="${(py(h.t) + (h.ly || 0)).toFixed(1)}" text-anchor="middle">${esc(h.name)}
+       <tspan> ${nf(h.mo)} ₪</tspan></text>`).join("");
+
+  document.getElementById("scatter").innerHTML =
+   `<svg viewBox="0 0 ${W} ${H}" role="img"
+      aria-label="פיזור: תדירות מול סכום ממוצע לעסקה, לכל הרגל הוצאה. מאפיות 17 פעמים בחודש ב-45 שקל; הקצב 2.3 פעמים ב-812 שקל.">
+      ${grid}
+      <line class="sy-axis" x1="${R}" x2="${R}" y1="${T}" y2="${B}"></line>
+      <line class="sx-axis" x1="${L}" x2="${R}" y1="${B}" y2="${B}"></line>
+      ${xt}
+      ${dots}
+      ${labs}
+      <text class="saxt" x="${R}" y="${T - 10}" text-anchor="end">₪ בעסקה ממוצעת ↑</text>
+      <text class="saxt" x="${(L + R) / 2}" y="${B + 44}" text-anchor="middle">← עסקאות בחודש</text>
+      <text class="squad" x="${L + 14}" y="${B - 12}" text-anchor="start">הרבה פעמים · קצת כל פעם</text>
+    </svg>`;
+
+  document.querySelectorAll(".sdot").forEach(c => {
+    const h = HABITS[+c.dataset.i];
+    const show = e => tipOn(
+      `<b>${esc(h.name)}</b><br><span class="tn">${h.f}</span> פעמים בחודש · <span class="tn">${nf(h.t)} ₪</span> בממוצע<br>
+       <span class="tn">${nf(h.mo)} ₪</span> בחודש`, e.clientX, e.clientY);
+    c.addEventListener("mousemove", show);
+    c.addEventListener("mouseleave", tipOff);
+  });
+})();
+
+/* ---------- 2. ranked overview ---------- */
+(function rank(){
+  const MAX = Math.max(...BLOCKS.map(b => b.mo));
+  const rows = BLOCKS.map(b => {
+    const cut = cutOf(b), keep = b.mo - cut;
+    const label = b.target === null ? "לזיהוי / לבדיקה" : (cut ? `נחתך ${nf(cut)}` : "ללא שינוי");
+    return `<button class="rrow" type="button" data-tip="${esc(b.name)}|${nf(b.mo)}|${nf(keep)}|${nf(cut)}">
+      <span class="rname">${esc(b.name)}</span>
+      <span class="rtrack">
+        <span class="rkeep" style="width:${(keep / MAX * 100).toFixed(2)}%"></span>
+        ${cut ? `<span class="rcut" style="width:${(cut / MAX * 100).toFixed(2)}%"></span>` : ""}
+      </span>
+      <span class="rval"><b>${nf(b.mo)} ₪</b> · ${esc(label)}</span>
+    </button>`;
+  }).join("");
+  document.getElementById("rank").innerHTML = rows +
+    `<div class="legend">
+       <span><i class="swatch" style="background:var(--track)"></i>נשאר</span>
+       <span><i class="swatch" style="background:var(--gain)"></i>נחתך — סה״כ ${nf(TOTAL_CUT - 100)} ₪ מהגמיש</span>
+     </div>`;
+  document.querySelectorAll(".rrow").forEach(el => {
+    const [name, mo, keep, cut] = el.dataset.tip.split("|");
+    const show = e => tipOn(`<b>${esc(name)}</b><br><span class="tn">${mo} ₪</span> היום ·
+      <span class="tn">${keep} ₪</span> אחרי` + (cut !== "0" ? `<br>חיסכון <span class="tn">${cut} ₪</span>` : ""),
+      e.clientX, e.clientY);
+    el.addEventListener("mousemove", show);
+    el.addEventListener("mouseleave", tipOff);
+    el.addEventListener("focus", () => { const r = el.getBoundingClientRect(); show({clientX:r.left + 40, clientY:r.top + 8}); });
+    el.addEventListener("blur", tipOff);
+  });
+})();
+
+/* ---------- 3. decoder blocks ---------- */
+(function blocks(){
+  const CHIP = { easy:"קל — שיחה או כפתור", mid:"בינוני — הרגל", hard:"דורש החלטה", none:"לא לחיתוך" };
+  const VISIBLE = 4;
+
+  const applePanel = () => {
+    const mx = Math.max(...APPLE_MONTHS.map(m => m[1]));
+    const bars = APPLE_MONTHS.map(([m, v]) =>
+      `<div class="abar${v === mx ? " peak" : ""}"><em>${v}</em>
+         <i style="height:${(v / mx * 62).toFixed(0)}px"></i><span>${m}</span></div>`).join("");
+    return `<div class="apple">
+      <h4>Apple — 203 ₪ בחודש, 27 חיובים</h4>
+      <p><span dir="ltr">APPLE.COM/BILL</span> הוא תיאור גנרי לכל דבר שנקנה דרך Apple ID:
+        אחסון iCloud, מנוי לאפליקציה, וגם <b>רכישה בתוך אפליקציה</b>.
+        <span dir="ltr">CORK</span> ו־<span dir="ltr">ITUNES.COM</span> הן רק ישויות החיוב
+        האיריות של Apple — אותו דבר בדיוק. <b>התדפיס הבנקאי לא יודע איזו אפליקציה זו; רק Apple יודעת</b>,
+        ולכן לא אנחש לכם שמות.</p>
+      <div class="amonths">${bars}</div>
+      <p>מה שכן אפשר להסיק מהצורה: מנוי קבוע גובה סכום זהה בתאריך זהה.
+        כאן יש <b>4.5 חיובים בחודש בסכומים משתנים</b>, וקפיצה מ־117 ₪ במרץ ל־309 ₪ ביולי.
+        זו לא חתימה של מנויים. בצירוף העובדה שלילדים יש מכשירים, זו חתימה של
+        רכישות בתוך משחקים ואפליקציות. לגודל: iCloud+ 200GB עולה כ־11.90 ₪ ו־2TB כ־44.90 ₪ —
+        כלומר האחסון מסביר לכל היותר כ־45 ₪ מתוך ה־203.</p>
+      <ol class="steps">
+        <li><span><b>לראות מה כבר קרה.</b> כל חיוב מפורט לפי שם אפליקציה ותאריך.
+          <span class="path">הגדרות ← השם שלכם ← מדיה ורכישות ← הצג חשבון ← היסטוריית רכישות</span>
+          או <span dir="ltr">reportaproblem.apple.com</span>, שם גם אפשר לבקש החזר על רכישה של ילד.</span></li>
+        <li><span><b>לראות מה ימשיך.</b> רשימת כל מה שמתחדש, עם תאריך החידוש הבא.
+          <span class="path">הגדרות ← השם שלכם ← מנויים</span></span></li>
+        <li><span><b>לסגור את הברז.</b> להעביר "רכישות בתוך אפליקציה" ל<b>אל תאפשר</b>.
+          <span class="path">הגדרות ← זמן מסך ← הגבלות תוכן ופרטיות ← רכישות בחנות</span>
+          ובשיתוף משפחתי — להפעיל <b>בקש לקנות</b>, כך שכל רכישה של ילד דורשת אישור בטלפון שלכם.</span></li>
+        <li><span><b>תקרה קשיחה.</b> להסיר את כרטיס האשראי מה־Apple ID ולעבור לגיפט קארד.
+          כשהיתרה נגמרת, החיובים נעצרים מעצמם.</span></li>
+      </ol>
+    </div>`;
+  };
+
+  document.getElementById("blocks").innerHTML = BLOCKS.map((b, i) => {
+    const cut = cutOf(b);
+    const total6 = b.subs.reduce((a, s) => a + s[1], 0);
+    const ticket = b.n ? total6 / b.n : 0;
+    const mx = Math.max(...b.subs.map(s => s[1]));
+    const row = ([name, tot, n]) => `<div class="mrow">
+        <span class="mname">${esc(name)}</span>
+        <span class="mtrack"><span class="mfill" style="width:${Math.max(1, tot / mx * 100).toFixed(1)}%"></span></span>
+        <span class="mtot">${nf(tot / 6)} ₪<span class="mn"> לחודש</span></span>
+        <span class="mn">${n} עס׳</span>
+      </div>`;
+    const head = b.subs.slice(0, VISIBLE).map(row).join("");
+    const rest = b.subs.slice(VISIBLE);
+    const restHtml = rest.length
+      ? `<div class="mlist" id="rest${i}" hidden>${rest.map(row).join("")}</div>
+         <button class="more" type="button" data-t="${i}" aria-expanded="false" aria-controls="rest${i}">
+           ▾ עוד ${rest.length} ${rest.length === 1 ? "שורה" : "שורות"}</button>` : "";
+
+    const verdict = b.target === null
+      ? `<span class="vtar">אין יעד — הבלוק הזה צריך זיהוי לפני שאפשר לתקצב אותו</span>
+         <span class="chip ${b.diff}">${CHIP[b.diff]}</span>`
+      : `<span class="vcut">${cut ? "−" + nf(cut) + " ₪" : "0 ₪"}</span>
+         <span class="vtar">יעד <b>${nf(b.target)} ₪</b> במקום <b>${nf(b.mo)} ₪</b></span>
+         <span class="chip ${b.diff}">${CHIP[b.diff]}</span>`;
+
+    return `<article class="blk${b.flag ? " flag" : ""}">
+      <div class="bhead">
+        <span class="brank">${String(i + 1).padStart(2, "0")}</span>
+        <div><h3>${esc(b.name)}</h3>
+          <span class="bmeta">${nf(b.n / 6)} עס׳/חודש · ${nf(ticket)} ₪ טיקט ממוצע · ${b.n} חיובים בחצי שנה</span></div>
+        <div class="bfig"><span class="bmo">${nf(b.mo)} ₪</span>
+          <span class="bpct">${(b.mo / FLEX * 100).toFixed(1)}% מהגמיש</span></div>
+      </div>
+      <p class="bwhat">${b.what}</p>
+      ${b.apple ? applePanel() : ""}
+      <div class="mlist">${head}</div>
+      ${restHtml}
+      <div class="verdict">${verdict}</div>
+    </article>`;
+  }).join("");
+
+  document.querySelectorAll(".more").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const box = document.getElementById("rest" + btn.dataset.t);
+      const open = box.hidden;
+      box.hidden = !open;
+      btn.setAttribute("aria-expanded", String(open));
+      btn.textContent = (open ? "▴ הסתר" : "▾ עוד " + box.children.length +
+        (box.children.length === 1 ? " שורה" : " שורות"));
+    });
+  });
+})();
+</script>
