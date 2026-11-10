@@ -1,0 +1,495 @@
+<title>הקפיצה של הקבועות</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#EDEEF2; --surface:#FFFFFF; --surface-2:#E3E5EC; --track:#D3D7E1;
+    --ink:#16192A; --ink-2:#545A6E; --ink-3:#7C8296;
+    --rule:#D6D9E2; --rule-strong:#BFC3D0;
+    --gain:#0E7BA3; --gain-soft:#DDEBF3;
+    --drain:#B24420; --drain-soft:#F5E2DA;
+    --locked:#8B5AA8; --locked-soft:#EDE3F3;
+    --shadow:rgba(22,25,42,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  body{direction:rtl; margin:0; background:var(--ground); color:var(--ink);
+    font-family:"Assistant","Arial Hebrew",system-ui,sans-serif; font-size:16.5px;
+    line-height:1.62; -webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Suez One","Frank Ruhl Libre",Georgia,serif; font-weight:400;
+           text-wrap:balance; margin:0; letter-spacing:-.005em}
+  h1{font-size:clamp(30px,5.2vw,46px); line-height:1.14}
+  h2{font-size:clamp(21px,2.9vw,27px); line-height:1.3}
+  h3{font-size:18px; line-height:1.32}
+  p{margin:0}
+  .n{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+     font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .ltr{direction:ltr; unicode-bidi:isolate; display:inline-block}
+
+  .wrap{max-width:1020px; margin:0 auto; padding:clamp(22px,4.5vw,54px) clamp(15px,4vw,38px) 80px}
+  .prose{max-width:66ch}
+  .prose p + p{margin-top:14px}
+  .eyebrow{font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+           color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+  section{margin-top:clamp(40px,5.5vw,62px)}
+  .sec-head{display:flex; flex-direction:column; gap:7px; margin-bottom:20px}
+  .sec-head > p{color:var(--ink-2); font-weight:300; max-width:68ch; font-size:15.5px}
+
+  header{display:flex; flex-direction:column; gap:14px; padding-bottom:24px;
+         border-bottom:2px solid var(--ink)}
+  .lede{max-width:65ch; color:var(--ink-2); font-size:18.5px; font-weight:300}
+  .lede strong{font-weight:600; color:var(--ink)}
+  .links{display:flex; gap:18px; flex-wrap:wrap}
+  .links a{font-size:13.5px; color:var(--gain); text-decoration:none; font-weight:600;
+           border-bottom:1px solid currentColor}
+  .links a:hover{color:var(--ink)}
+  .links a:focus-visible{outline:2px solid var(--gain); outline-offset:3px}
+
+  .strip{display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+         gap:1px; background:var(--rule); border:1px solid var(--rule); margin-top:24px}
+  .stat{background:var(--surface); padding:15px 17px; display:flex; flex-direction:column; gap:1px}
+  .stat .k{font-size:12.5px; color:var(--ink-3)}
+  .stat .v{font-family:"Suez One",serif; font-size:25px; line-height:1.2;
+           font-variant-numeric:tabular-nums}
+  .stat .t{font-size:12.5px; color:var(--ink-3); font-weight:300}
+  .stat.bad .v{color:var(--drain)} .stat.art .v{color:var(--locked)}
+
+  /* ---------- bridge ---------- */
+  .bridge{border:1px solid var(--rule); background:var(--surface); padding:18px}
+  .brow{display:grid; grid-template-columns:minmax(104px,170px) 1fr minmax(100px,auto);
+        gap:14px; align-items:center; padding-block:8px}
+  .bname{font-size:13.5px; font-weight:600}
+  .bname em{font-style:normal; display:block; font-size:12px; color:var(--ink-3); font-weight:300}
+  .btrack{position:relative; height:26px}
+  .bfill{position:absolute; inset-block:0; border-radius:2px}
+  .bfill.base{background:var(--track)}
+  .bfill.end{background:var(--gain-soft); border-inline-end:2px solid var(--gain)}
+  .bfill.art{background:var(--locked)}
+  .bfill.up{background:var(--drain)}
+  .bfill.dn{background:var(--gain)}
+  .bval{font-family:"IBM Plex Mono",monospace; font-size:13.5px; text-align:end;
+        font-variant-numeric:tabular-nums; white-space:nowrap}
+  .bval em{font-style:normal; display:block; font-size:11.5px; color:var(--ink-3)}
+
+  /* ---------- contributions ---------- */
+  .contrib{border:1px solid var(--rule); background:var(--surface); padding:16px 18px}
+  .crow{display:grid; grid-template-columns:minmax(118px,180px) 1fr 78px;
+        gap:12px; align-items:center; padding-block:5px; width:100%; text-align:start;
+        background:none; border:none; font:inherit; color:inherit; cursor:default}
+  .crow:focus-visible{outline:2px solid var(--gain); outline-offset:2px}
+  .cname{font-size:13.5px; font-weight:500}
+  .cname i{font-style:normal; font-size:11.5px; color:var(--ink-3); margin-inline-start:6px}
+  .cbar{height:15px; position:relative}
+  .cbar span{position:absolute; inset-block:0; inset-inline-start:0; border-radius:2px}
+  .cbar .up{background:var(--drain)} .cbar .dn{background:var(--gain)}
+  .cbar .art{background:var(--locked)}
+  .cval{font-family:"IBM Plex Mono",monospace; font-size:13px; text-align:end;
+        font-variant-numeric:tabular-nums; white-space:nowrap}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; padding-block:13px 3px; margin-block-start:9px;
+          border-block-start:1px solid var(--rule); font-size:13px; color:var(--ink-2)}
+  .legend span{display:flex; align-items:center; gap:6px}
+  .swatch{width:10px; height:10px; border-radius:2px; flex:none}
+
+  /* ---------- finding cards ---------- */
+  .finds{display:flex; flex-direction:column; gap:13px}
+  .find{border:1px solid var(--rule); background:var(--surface); padding:17px 19px}
+  .find.hot{border-inline-start:3px solid var(--drain)}
+  .fhead{display:grid; grid-template-columns:1fr auto; gap:6px 14px; align-items:baseline}
+  .famt{font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:500;
+        color:var(--drain); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .famt.good{color:var(--gain)}
+  .find p{grid-column:1/-1; font-size:14.5px; color:var(--ink-2); font-weight:300;
+          max-width:72ch; margin-top:5px}
+  .find b{color:var(--ink); font-weight:600}
+  .spark{display:flex; gap:3px; align-items:flex-end; height:30px; margin-top:11px;
+         max-width:300px}
+  .spark i{flex:1; background:var(--track); border-radius:1px 1px 0 0; min-height:2px}
+  .spark i.on{background:var(--drain)}
+  .spark i.ok{background:var(--gain)}
+  .sparklab{font-size:11px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace;
+            margin-top:3px; display:block}
+
+  /* ---------- table ---------- */
+  .tblwrap{overflow-x:auto; border:1px solid var(--rule); background:var(--surface)}
+  table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:680px}
+  th{text-align:start; font-weight:600; font-size:11px; letter-spacing:.08em; color:var(--ink-3);
+     padding:10px 14px; border-bottom:1px solid var(--rule-strong); white-space:nowrap;
+     font-family:"IBM Plex Mono",monospace}
+  th.num,td.num{text-align:end}
+  td{padding:8px 14px; border-bottom:1px solid var(--rule); white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  td.nm{font-weight:500; white-space:normal; min-width:150px}
+  td.nm i{font-style:normal; font-size:11.5px; color:var(--ink-3); display:block}
+  td.num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+  td.d{font-family:"IBM Plex Mono",monospace; font-weight:500}
+  td.d.up{color:var(--drain)} td.d.dn{color:var(--gain)} td.d.z{color:var(--ink-3)}
+  td.zero{color:var(--ink-3)}
+  tr.sum td{background:var(--surface-2); font-weight:600; color:var(--ink);
+            border-top:1px solid var(--rule-strong)}
+  .more{display:block; width:100%; padding:9px 16px; background:var(--surface-2); border:none;
+        border-top:1px solid var(--rule); font:inherit; font-size:13px; color:var(--ink-2);
+        cursor:pointer; text-align:start}
+  .more:hover{color:var(--ink)}
+  .more:focus-visible{outline:2px solid var(--gain); outline-offset:-2px}
+
+  .callout{border-inline-start:3px solid var(--locked); background:var(--locked-soft);
+           padding:16px 19px; margin-block-start:22px; max-width:68ch}
+  .callout .t{font-weight:700; margin-block-end:4px}
+  .callout p{font-size:15px}
+
+  #tip{position:fixed; z-index:9; pointer-events:none; background:var(--ink); color:var(--ground);
+       padding:8px 11px; border-radius:3px; font-size:13px; line-height:1.5; max-width:250px;
+       box-shadow:0 4px 14px var(--shadow); opacity:0; transition:opacity .12s; left:0; top:0}
+  #tip.on{opacity:1}
+  #tip .tn{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+
+  footer{margin-top:54px; padding-top:18px; border-top:1px solid var(--rule);
+         font-size:13px; color:var(--ink-3); font-weight:300;
+         display:flex; flex-direction:column; gap:7px; max-width:78ch}
+  footer b{font-weight:600; color:var(--ink-2)}
+  footer code{font-family:"IBM Plex Mono",monospace; font-size:12px; background:var(--surface-2);
+              padding:1px 5px; border-radius:2px; direction:ltr; display:inline-block}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:640px){
+    .brow{grid-template-columns:1fr; gap:4px}
+    .crow{grid-template-columns:1fr 70px}
+    .crow .cbar{grid-column:1/-1}
+  }
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">RiseUp · סיווג „קבוע” של האפליקציה · מרץ–אוקטובר 2026</p>
+  <h1>הקפיצה של הקבועות</h1>
+  <p class="lede">
+    מ־<strong>14,881 ₪</strong> בבסיס מרץ–מאי ל־<strong>18,109 ₪</strong> באוקטובר.
+    על הנייר <strong>+3,228 ₪</strong> — אבל <strong>רק 972 ₪ מזה אמיתיים</strong>.
+    השאר הוא לוח החיובים, לא ההוצאה.
+  </p>
+  <div class="links">
+    <a href="https://claude.ai/code/artifact/49a78fdb-1afe-4482-a034-38577828ef75">← דף התוכנית</a>
+    <a href="https://claude.ai/code/artifact/a6c6cb8c-54e6-4b36-a1fb-7b5508fb710f">← מפענח ההוצאה הגמישה</a>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="stat"><span class="k">בסיס מרץ+מאי</span><span class="v n">14,881 ₪</span><span class="t">הממוצע של שני החודשים שנקבת בהם</span></div>
+  <div class="stat"><span class="k">אוקטובר 2026</span><span class="v n">18,109 ₪</span><span class="t">החודש האחרון המלא</span></div>
+  <div class="stat art"><span class="k">עיתוי חיובים</span><span class="v n"><span class="ltr">+2,256</span> ₪</span><span class="t">70% מהקפיצה — לא הוצאה</span></div>
+  <div class="stat bad"><span class="k">עלייה אמיתית</span><span class="v n"><span class="ltr">+972</span> ₪</span><span class="t">זה מה שבאמת נוסף</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><h2>למה 3,228 הם בעצם 972</h2></div>
+  <div class="prose">
+    <p>חברת החשמל ומי מודיעין מחייבות <b>אחת לחודשיים</b>. במרץ ובמאי — שני החודשים
+      שבחרת כבסיס — <b>לא היה חשבון חשמל בכלל</b>, ובמאי גם לא היה חשבון מים.
+      באוקטובר היו שניהם. ההשוואה הזאת מייצרת 2,081 ₪ של "עלייה" שלא קרתה.</p>
+    <p>ועוד משהו שמעוות: בחודשים מאי–יוני שילמת את שכר הדירה בהעברה מהנייד במקום
+      בצ'ק. בתדפיס זה נראה כאילו סעיף אחד קפץ ב־3,850 ₪ ואחר צנח ב־3,500 ₪ —
+      בפועל זה אותו שכר דירה שעבר אמצעי תשלום. איחדתי אותם, אחרת שני הסעיפים
+      הגדולים בטבלה היו רעש.</p>
+    <p>אחרי שמנטרלים את שניהם נשארת <b>עלייה אמיתית של 972 ₪ בחודש</b> —
+      שהיא הרכב של כ־2,070 ₪ שנוספו ו־1,098 ₪ שהצלחת לבטל.</p>
+  </div>
+  <div class="bridge" id="bridge" style="margin-top:22px"></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>מה בדיוק זז</h2>
+    <p>כל סעיף שהשתנה ביותר מ־25 ₪ בין הבסיס לאוקטובר. אדום = נוסף, טורקיז = בוטל,
+      סגול = רק עיתוי החיוב.</p>
+  </div>
+  <div class="contrib" id="contrib"></div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>חמשת החשודים</h2></div>
+  <div class="finds" id="finds"></div>
+
+  <div class="callout">
+    <p class="t">ומשהו שלא מופיע במסך הקבועות שלך</p>
+    <p><b>תפארת האחוזה עלתה מ־4,000 ל־4,300 ₪</b> (ספטמבר 4,369, אוקטובר 4,300).
+      RiseUp מסווגת אותה „תרומה — משתנה”, ולכן היא לא נספרת ב־18,109 ולא תראה
+      אותה בקפיצה. זו עלייה של 300 ₪ בחודש, 3,600 ₪ בשנה, בסעיף שהגדרת כהתחייבות סגורה.
+      אם זה לא היה בידיעתך — שווה לברר.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>כל השורות הקבועות</h2>
+    <p>מסודר לפי גודל השינוי. „–” = לא היה חיוב באותו חודש.</p>
+  </div>
+  <div class="tblwrap" id="table"></div>
+  <button class="more" id="more" type="button" aria-expanded="false" aria-controls="smallrows"></button>
+</section>
+
+<footer>
+  <p><b>מקור.</b> RiseUp Exposed API, <code>GET /api/external/transactions?cashflowMonth=YYYY-MM</code>,
+     קריאה בלבד, מרץ–אוקטובר 2026 (1,795 עסקאות). הסיווג „קבוע” הוא
+     <code>actualType: "fixed"</code> של RiseUp עצמה ולא שלי — לכן המספרים כאן
+     מתלכדים עם מה שאתה רואה באפליקציה. הוסרו הכנסות, עסקאות מסומנות כמוחרגות,
+     ו־13 חיובי כרטיס מרוכזים בעו״ש שמייצרים ספירה כפולה.</p>
+  <p><b>הבסיס.</b> ממוצע מרץ ומאי — שני החודשים שנקבת בהם (15,411 ו־14,352).
+     כל השוואה לחודש בודד הייתה נותנת תוצאה אחרת בגלל החיוב הדו־חודשי,
+     ולכן גם הטבלה מראה את כל שמונת החודשים ולא רק את שני הקצוות.</p>
+  <p><b>נובמבר לא נכלל.</b> נכון ל־10 בנובמבר נרשמו 65 עסקאות בלבד — חודש חלקי
+     שאי אפשר להסיק ממנו מגמה.</p>
+  <p><b>הכנסה.</b> בדקתי אגב הניתוח: ההכנסה הקבועה (משכורת + עובדי מדינה + קצבת ילדים)
+     היא 35,600–36,600 ₪ בחודש, כלומר ה־36,000 ₪ שמסרת מדויק. מה שנראה בתדפיס
+     כהכנסה גבוהה יותר הוא העברות נכנסות בביט ופייבוקס — החזרים, לא הכנסה.</p>
+</footer>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const MONTHS = ["מרץ","אפר׳","מאי","יוני","יולי","אוג׳","ספט׳","אוק׳"];
+const BASE = 14881, OCT = 18109;
+
+/* every fixed line: m = Mar..Oct, base = avg(Mar,May), d = Oct − base */
+const ROWS = [
+ ["חברת החשמל","חשמל",[0,1254,0,1334,0,1834,0,2163],0,2163,2163],
+ ["Claude","כלי AI",[0,0,0,0,160,304,312,318],0,318,318],
+ ["קסטרו — תשלומים","תשלומים",[0,0,0,0,0,0,257,257],0,257,257],
+ ["Apple","דיגיטל",[99,99,99,99,124,179,204,333],99,333,233],
+ ["מי מודיעין","מים",[340,261,0,249,0,289,0,400],170,400,230],
+ ["מור פיט ג׳ים","חדר כושר",[0,0,0,0,336,396,396,185],0,185,185],
+ ["העברה קבועה בנייד","העברות",[350,350,0,350,0,1050,350,350],175,350,175],
+ ["שכר דירה","דיור",[7000,7000,7350,7350,7350,7350,7350,7350],7175,7350,175],
+ ["מספרה — וי.ברבר","טיפוח",[0,90,90,200,200,100,200,200],45,200,155],
+ ["הלוואה — קרן","הלוואה",[2320,2332,2344,2356,2368,2380,2393,2405],2332,2405,73],
+ ["Apple (CORK)","דיגיטל",[0,0,0,70,0,0,0,70],0,70,70],
+ ["חוגים — סחלבים","חוגים",[80,190,190,630,0,200,200,200],135,200,65],
+ ["HOT Mobile","תקשורת",[0,0,0,0,46,46,53,61],0,61,61],
+ ["YES","תקשורת",[219,245,275,0,109,199,199,294],247,294,48],
+ ["ליברה — ביטוח רכב","ביטוח",[918,918,250,632,632,632,632,632],584,632,48],
+ ["Google Cloud","דיגיטל",[0,0,0,0,0,0,0,30],0,30,30],
+ ["ביטוח דירה","ביטוח",[0,0,37,38,38,38,38,38],18,38,20],
+ ["ארנונה","ארנונה",[906,906,905,905,933,933,916,916],905,916,10],
+ ["הראל — ביטוח","ביטוח",[299,300,301,304,303,303,304,306],300,306,6],
+ ["עיגול לתחום בריאות","בריאות",[1,6,9,3,6,8,6,8],5,8,3],
+ ["JetBrains","דיגיטל",[25,24,22,24,24,24,25,25],24,25,1],
+ ["כלל — ביטוח חיים","ביטוח",[68,68,69,69,69,69,69,69],68,69,1],
+ ["הפניקס — ביטוח","ביטוח",[113,114,115,115,115,115,116,115],114,115,1],
+ ["הפניקס — חיים ובריאות","בריאות",[54,55,55,55,55,55,56,55],55,55,1],
+ ["דמי כרטיס","עמלות",[18,18,18,18,18,18,18,18],18,18,0],
+ ["„הכל לים”","תשלומים",[540,540,540,540,540,540,540,540],540,540,0],
+ ["RiseUp","מנוי",[55,55,55,55,55,55,55,55],55,55,0],
+ ["ספייס — חדר כושר","חדר כושר",[149,149,149,149,149,149,149,149],149,149,0],
+ ["HOT","תקשורת",[0,0,0,167,259,33,0,0],0,0,0],
+ ["Akool","כלי AI",[0,0,0,0,38,37,0,0],0,0,0],
+ ["ליאור עדיקה — תשלומים","תשלומים",[0,0,0,0,382,382,0,0],0,0,0],
+ ["PAYPAL *TKN6","לא מזוהה",[0,0,0,0,0,465,659,0],0,0,0],
+ ["Google One","דיגיטל",[15,30,30,19,19,19,0,19],22,19,-4],
+ ["פועלים — דמי כרטיס","עמלות",[17,17,0,0,0,0,0,0],9,0,-9],
+ ["נאייקס — מכונות","כללי",[0,10,21,0,0,5,10,0],10,0,-10],
+ ["א.ב. ספורט","ספורט",[0,0,44,66,30,61,0,0],22,0,-22],
+ ["Apple (iTunes)","דיגיטל",[0,0,70,0,70,70,70,12],35,12,-23],
+ ["קובי דדוש — כוורת","כללי",[0,19,53,33,17,0,0,0],27,0,-27],
+ ["Canva","דיגיטל",[42,40,38,0,41,40,0,0],40,0,-40],
+ ["Netflix","דיגיטל",[87,87,0,0,0,0,0,0],43,0,-43],
+ ["Udemy","דיגיטל",[95,0,0,0,0,0,0,0],47,0,-47],
+ ["AWS","דיגיטל",[106,101,0,0,0,0,0,0],53,0,-53],
+ ["MAYVEN","תשלומים",[119,119,0,0,0,0,0,0],60,0,-60],
+ ["ChatGPT","כלי AI",[63,0,59,60,61,0,0,0],61,0,-61],
+ ["ליברה — ביטוח חובה","ביטוח",[238,238,131,121,121,121,121,121],185,121,-64],
+ ["פלאפון","תקשורת",[105,105,105,96,65,75,96,16],105,16,-89],
+ ["הלוואה — ריבית","הלוואה",[500,542,514,516,470,458,443,399],507,399,-108],
+ ["גאיה","לא מזוהה",[0,0,414,414,0,0,0,0],207,0,-207],
+ ["קופ״ח מאוחדת","בריאות",[470,398,0,0,0,0,0,0],235,0,-235]
+];
+
+/* the bridge: base → billing-timing → real increases → real decreases → October */
+const ART = 2256, UP = 2070, DN = -1098;
+
+/* contributions, with the two utilities split into timing vs real */
+const CONTRIB = [
+ ["חשמל — עיתוי החיוב","לא הוצאה",1811,"art"],
+ ["חשמל — צריכה אמיתית","647 ל־999 ₪ בחודש",352,"up"],
+ ["Claude","חדש מיולי",318,"up"],
+ ["Apple","99 ל־333 ₪",303,"up"],
+ ["מים — עיתוי החיוב","לא הוצאה",270,"art"],
+ ["קסטרו — תשלומים","חדש מספטמבר",257,"up"],
+ ["מור פיט ג׳ים","חדר כושר שני",185,"up"],
+ ["העברה 350 — עיתוי","לא הוצאה",175,"art"],
+ ["שכר דירה","7,000 ל־7,350 ₪",175,"up"],
+ ["מספרה — וי.ברבר","עלה ל־200 קבוע",155,"up"],
+ ["הלוואה — קרן","סילוקין רגיל",73,"up"],
+ ["חוגים — סחלבים","",65,"up"],
+ ["HOT Mobile","חדש מיולי",61,"up"],
+ ["YES","",48,"up"],
+ ["ליברה — ביטוח רכב","",48,"up"],
+ ["Google Cloud","חדש מאוקטובר",30,"up"],
+ ["מים — שינוי אמיתי","",-40,"dn"],
+ ["קובי דדוש","הופסק",-27,"dn"],
+ ["Canva","בוטל",-40,"dn"],
+ ["Netflix","בוטל",-43,"dn"],
+ ["Udemy","בוטל",-47,"dn"],
+ ["AWS","בוטל",-53,"dn"],
+ ["MAYVEN","תשלומים נגמרו",-60,"dn"],
+ ["ChatGPT","בוטל",-61,"dn"],
+ ["ליברה — ביטוח חובה","ירד",-64,"dn"],
+ ["פלאפון","ירד ל־16 ₪",-89,"dn"],
+ ["הלוואה — ריבית","יורדת מעצמה",-108,"dn"],
+ ["גאיה","הסתיים",-207,"dn"],
+ ["קופ״ח מאוחדת","הו״ק בוטלה",-235,"dn"],
+ ["שאר שינויים קטנים","",-24,"dn"]
+];
+
+const FINDS = [
+ { t:"Apple — שילש את עצמו", amt:"+303 ₪", hot:true,
+   m:[99,99,99,99,124,179,204,333], hi:[4,5,6,7],
+   p:"ארבעה חודשים רצופים על 99 ₪ בדיוק, ואז טיפוס רצוף: 124 → 179 → 204 → <b>333</b>. זו בדיוק הדליפה שסימנתי בדף הקודם — חיובים קטנים ומשתנים שנראים כמו רכישות בתוך אפליקציות, לא כמו מנוי. מאז היא <b>שילשה את עצמה</b>. זה הסעיף שהכי דחוף לסגור: הגדרות ← זמן מסך ← הגבלות תוכן ופרטיות ← רכישות בחנות ← „רכישות בתוך אפליקציה: אל תאפשר”, ולהפעיל „בקש לקנות” בשיתוף המשפחתי." },
+ { t:"Claude — 318 ₪ ונכנס לקבועות", amt:"+318 ₪", hot:true,
+   m:[0,0,0,0,160,304,312,318], hi:[4,5,6,7],
+   p:"התחיל ביולי ב־160 ₪ והתייצב על ~315 ₪. ביטלת את ChatGPT (61 ₪), את Akool ואת AWS — אבל <b>הכלי שנשאר עולה פי חמישה ממה שבוטל</b>. זה לגיטימי אם אתה משתמש בו, אבל כדאי לדעת שסך כלי ה־AI והדיגיטל שלך לא ירד — הוא עלה." },
+ { t:"קסטרו — עסקת תשלומים חדשה", amt:"+257 ₪", hot:true,
+   m:[0,0,0,0,0,0,257,257], hi:[6,7],
+   p:"257 ₪ בדיוק בספטמבר ובאוקטובר, מסווג „תשלומים”. <b>שני תשלומים מתוך סדרה.</b> כדאי לבדוק בכרטיס כמה תשלומים נשארו ומה הסכום הכולל — אם זו פריסה של 6 או 12, היא תמשיך ללוות אותך חודשים קדימה. זה בדיוק הדפוס שהמלצתי להימנע ממנו כל עוד יש גירעון." },
+ { t:"שני חדרי כושר, עדיין", amt:"334 ₪", hot:true,
+   m:[149,149,149,149,485,545,545,334], hi:[4,5,6,7],
+   p:"ספייס רץ על 149 ₪ בכל אחד משמונת החודשים, ומור פיט נוסף ביולי. סימנתי את זה בדף הקודם כחפיפה — <b>ארבעה חודשים אחר כך שניהם עדיין מחויבים</b>. ביחד 334 ₪ בחודש על אותו שימוש." },
+ { t:"חשמל — כאן העלייה כן אמיתית", amt:"+352 ₪", hot:false,
+   m:[0,1254,0,1334,0,1834,0,2163], hi:[5,7],
+   p:"החשבון הדו־חודשי עלה 1,254 → 1,334 → 1,834 → <b>2,163</b>. אחרי פריסה לחודשים זה 647 ₪ בחודש במרץ–יוני מול 999 ₪ ביולי–אוקטובר. חלק מזה קיץ, אבל החשבון של אוקטובר כבר לא קיץ — <b>הוא הגבוה ביותר בכל התקופה</b>. שווה לבדוק תעריף, ומה צורך 24/7 בבית." },
+ { t:"ומה שכן הצלחת לבטל", amt:"−1,098 ₪", hot:false, good:true,
+   m:[], hi:[],
+   p:"קופ״ח מאוחדת (235), גאיה (207), פלאפון (89), ליברה חובה (64), ChatGPT (61), MAYVEN (60), AWS (53), Udemy (47), Netflix (43), Canva (40), וריבית ההלוואה שיורדת מעצמה (108). <b>זה עבד.</b> בלי הביטולים האלה אוקטובר היה 19,207 ₪ ולא 18,109." }
+];
+
+const nf = v => Math.round(Math.abs(v)).toLocaleString("he-IL");
+const sg = v => (v < 0 ? "−" : "+") + nf(v);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const tip = document.getElementById("tip");
+function tipOn(html, x, y){
+  tip.innerHTML = html; tip.classList.add("on");
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - r.width - 8)) + "px";
+  tip.style.top = Math.max(8, y - r.height - 12) + "px";
+}
+const tipOff = () => tip.classList.remove("on");
+
+/* ---------- bridge ---------- */
+(function bridge(){
+  const MAX = BASE + ART + UP;              /* 19,207 — the peak before the cuts */
+  const pc = v => (v / MAX * 100).toFixed(2);
+  const steps = [
+    ["בסיס מרץ+מאי","הממוצע של שני החודשים", 0, BASE, "base", BASE, ""],
+    ["עיתוי חיובים","חשמל, מים, העברה — לא הוצאה", BASE, BASE + ART, "art", ART, "מצטבר " + nf(BASE + ART)],
+    ["עליות אמיתיות","מה שבאמת נוסף", BASE + ART, BASE + ART + UP, "up", UP, "מצטבר " + nf(BASE + ART + UP)],
+    ["ירידות אמיתיות","מה שביטלת", OCT, BASE + ART + UP, "dn", DN, "מצטבר " + nf(OCT)],
+    ["אוקטובר","בפועל", 0, OCT, "end", OCT, ""]
+  ];
+  document.getElementById("bridge").innerHTML = steps.map(([nm, sub, a, b, cls, val, note]) =>
+    `<div class="brow">
+       <div class="bname">${esc(nm)}<em>${esc(sub)}</em></div>
+       <div class="btrack"><div class="bfill ${cls}"
+         style="inset-inline-start:${pc(a)}%; width:${pc(b - a)}%"></div></div>
+       <div class="bval">${cls === "base" || cls === "end" ? nf(val) + " ₪"
+          : `<span class="ltr">${sg(val)}</span> ₪`}<em>${esc(note)}</em></div>
+     </div>`).join("");
+})();
+
+/* ---------- contributions ---------- */
+(function contrib(){
+  const MAX = Math.max(...CONTRIB.map(c => Math.abs(c[2])));
+  document.getElementById("contrib").innerHTML = CONTRIB.map(([nm, sub, v, k]) =>
+    `<button class="crow" type="button" data-t="${esc(nm)}|${sg(v)}|${esc(sub)}">
+       <span class="cname">${esc(nm)}${sub ? `<i>&nbsp;· ${esc(sub)}</i>` : ""}</span>
+       <span class="cbar"><span class="${k}" style="width:${(Math.abs(v) / MAX * 100).toFixed(2)}%"></span></span>
+       <span class="cval" style="color:var(--${k === "art" ? "locked" : k === "up" ? "drain" : "gain"})">
+         <span class="ltr">${sg(v)}</span></span>
+     </button>`).join("") +
+    `<div class="legend">
+       <span><i class="swatch" style="background:var(--drain)"></i>נוסף — <span class="n">+2,070 ₪</span></span>
+       <span><i class="swatch" style="background:var(--gain)"></i>בוטל — <span class="n">−1,098 ₪</span></span>
+       <span><i class="swatch" style="background:var(--locked)"></i>רק עיתוי החיוב — <span class="n">+2,256 ₪</span></span>
+     </div>`;
+  document.querySelectorAll(".crow").forEach(el => {
+    const [nm, v, sub] = el.dataset.t.split("|");
+    const show = e => tipOn(`<b>${esc(nm)}</b><br><span class="tn">${v} ₪</span> בחודש` +
+      (sub ? `<br>${esc(sub)}` : ""), e.clientX, e.clientY);
+    el.addEventListener("mousemove", show);
+    el.addEventListener("mouseleave", tipOff);
+    el.addEventListener("focus", () => { const r = el.getBoundingClientRect(); show({clientX:r.left + 40, clientY:r.top + 8}); });
+    el.addEventListener("blur", tipOff);
+  });
+})();
+
+/* ---------- findings ---------- */
+(function finds(){
+  document.getElementById("finds").innerHTML = FINDS.map(f => {
+    let spark = "";
+    if (f.m.length){
+      const mx = Math.max(...f.m, 1);
+      spark = `<div class="spark">${f.m.map((v, i) =>
+        `<i class="${f.hi.includes(i) ? (f.good ? "ok" : "on") : ""}"
+            style="height:${Math.max(2, Math.round(v / mx * 30))}px"
+            title="${MONTHS[i]}: ${nf(v)} ₪"></i>`).join("")}</div>
+        <span class="sparklab">${MONTHS.join(" · ")}</span>`;
+    }
+    return `<article class="find${f.hot ? " hot" : ""}">
+      <div class="fhead"><h3>${esc(f.t)}</h3>
+        <span class="famt${f.good ? " good" : ""}"><span class="ltr">${esc(f.amt)}</span></span>
+        <p>${f.p}</p></div>${spark}
+    </article>`;
+  }).join("");
+})();
+
+/* ---------- table ---------- */
+(function table(){
+  const row = r => {
+    const [nm, cat, m, base, oct, d] = r;
+    const k = d > 25 ? "up" : d < -25 ? "dn" : "z";
+    return `<tr>
+      <td class="nm">${esc(nm)}<i>${esc(cat)}</i></td>
+      ${m.map(v => `<td class="num${v ? "" : " zero"}">${v ? nf(v) : "–"}</td>`).join("")}
+      <td class="d ${k}"><span class="ltr">${d === 0 ? "0" : sg(d)}</span></td>
+    </tr>`;
+  };
+  const big = ROWS.filter(r => Math.abs(r[5]) > 25);
+  const small = ROWS.filter(r => Math.abs(r[5]) <= 25);
+  document.getElementById("table").innerHTML =
+    `<table>
+      <thead><tr><th>סעיף</th>${MONTHS.map(m => `<th class="num">${m}</th>`).join("")}<th class="num">Δ</th></tr></thead>
+      <tbody>${big.map(row).join("")}</tbody>
+      <tbody id="smallrows" hidden>${small.map(row).join("")}</tbody>
+      <tbody><tr class="sum"><td>סך הקבועות</td>
+        ${[15411,16681,14352,17048,15214,19034,16255,18109].map(v => `<td class="num">${nf(v)}</td>`).join("")}
+        <td class="d up"><span class="ltr">+3,228</span></td></tr></tbody>
+    </table>`;
+  const btn = document.getElementById("more"), box = document.getElementById("smallrows");
+  const label = o => o ? "▴ הסתר את השורות שלא זזו" : `▾ עוד ${small.length} שורות קבועות שלא השתנו`;
+  btn.textContent = label(false);
+  btn.addEventListener("click", () => {
+    const open = box.hidden; box.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open)); btn.textContent = label(open);
+  });
+})();
+</script>
