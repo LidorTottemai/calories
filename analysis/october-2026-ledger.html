@@ -104,6 +104,18 @@
   .note{font-size:12.5px; color:var(--ink-3); margin:-6px 0 14px;
         display:flex; gap:6px; align-items:baseline}
   .note b{color:var(--locked); font-weight:700}
+  .grp{border-block-start:2px solid var(--gain)}
+  .grp:first-child{border-block-start:none}
+  .ghead{position:sticky; top:0; z-index:2; display:grid;
+         grid-template-columns:1fr auto; gap:2px 12px; align-items:baseline;
+         padding:9px 16px 8px; background:var(--surface-2);
+         border-block-end:1px solid var(--rule-strong)}
+  .gname{font-size:14.5px; font-weight:700}
+  .gsum{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+        font-size:14px; font-weight:600; white-space:nowrap}
+  .gcount{grid-column:1/-1; font-size:11px; color:var(--ink-3);
+          font-family:"IBM Plex Mono",monospace; letter-spacing:.04em}
+  .row.row2,.thead.t2,.csum.c2{grid-template-columns:1fr auto}
   .csum{display:grid; grid-template-columns:1fr auto 88px; gap:10px; padding:12px 16px;
         background:var(--surface-2); border-top:1px solid var(--rule-strong);
         font-weight:600; font-size:14px}
@@ -179,7 +191,7 @@ const DATA = {"fixed":[["שיק",7350,"דיור",1,0],["תפארת האחוזה"
 const nf = v => Math.round(v).toLocaleString("he-IL");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const SIDES = [
-  { key:"variable", cls:"var", title:"הוצאות משתנות" },
+  { key:"variable", cls:"var", title:"הוצאות משתנות", group:true },
   { key:"fixed",    cls:"fix", title:"הוצאות קבועות" }
 ];
 let sortMode = "sum", filter = "";
@@ -187,34 +199,67 @@ const ALL = [...DATA.fixed, ...DATA.variable];
 const TOT = { rows: ALL.length, tx: ALL.reduce((a, r) => a + r[3], 0),
               sum: ALL.reduce((a, r) => a + r[1], 0) };
 
+function rowHTML(r, max, cols3){
+  return `<div class="row${cols3 ? "" : " row2"}${r[4] ? " ov" : ""}">
+     <span class="nm">${esc(r[0])}</span>
+     <span class="am">${nf(r[1])} ₪</span>
+     ${cols3 ? `<span class="cg">${r[4] ? '<b class="ovm">•</b>' : ""}${esc(r[2])}</span>` : ""}
+     <span class="bar" style="width:${(r[1] / max * 100).toFixed(2)}%"></span>
+   </div>`;
+}
+const EMPTY = `<p class="empty">אין התאמה בעמודה הזאת.</p>`;
+
 function render(){
   const f = filter.trim().toLowerCase();
   let shown = 0, shownSum = 0;
   document.getElementById("cols").innerHTML = SIDES.map(s => {
-    let rows = DATA[s.key].filter(r =>
+    const rows = DATA[s.key].filter(r =>
       !f || r[0].toLowerCase().includes(f) || r[2].toLowerCase().includes(f));
     const sum = rows.reduce((a, r) => a + r[1], 0);
-    const max = Math.max(1, ...rows.map(r => r[1]));
     shown += rows.length; shownSum += sum;
-    rows = rows.slice().sort(sortMode === "sum"
-      ? (a, b) => b[1] - a[1]
-      : (a, b) => a[2].localeCompare(b[2], "he") || b[1] - a[1]);
-    const body = rows.length ? rows.map(r =>
-      `<div class="row${r[4] ? " ov" : ""}">
-         <span class="nm">${esc(r[0])}</span>
-         <span class="am">${nf(r[1])} ₪</span>
-         <span class="cg">${r[4] ? '<b class="ovm">•</b>' : ""}${esc(r[2])}</span>
-         <span class="bar" style="width:${(r[1] / max * 100).toFixed(2)}%"></span>
-       </div>`).join("")
-      : `<p class="empty">אין התאמה בעמודה הזאת.</p>`;
+    let body, thead;
+
+    if (s.group){
+      const by = new Map();
+      rows.forEach(r => { if (!by.has(r[2])) by.set(r[2], []); by.get(r[2]).push(r); });
+      const groups = [...by.entries()].map(([cat, rs]) => ({
+        cat,
+        rs: rs.slice().sort((a, b) => b[1] - a[1]),
+        sum: rs.reduce((a, r) => a + r[1], 0)
+      }));
+      groups.sort(sortMode === "sum"
+        ? (a, b) => b.sum - a.sum
+        : (a, b) => a.cat.localeCompare(b.cat, "he"));
+      thead = `<div class="thead t2"><span>שם העסק</span><span class="a">סכום</span></div>`;
+      body = groups.length ? groups.map(g => {
+        const mx = Math.max(1, ...g.rs.map(r => r[1]));
+        return `<div class="grp">
+          <div class="ghead">
+            <span class="gname">${esc(g.cat)}</span>
+            <span class="gsum n">${nf(g.sum)} ₪</span>
+            <span class="gcount">${g.rs.length} ${g.rs.length === 1 ? "שורה" : "שורות"}</span>
+          </div>
+          ${g.rs.map(r => rowHTML(r, mx, false)).join("")}
+        </div>`;
+      }).join("") : EMPTY;
+    } else {
+      const mx = Math.max(1, ...rows.map(r => r[1]));
+      const sorted = rows.slice().sort(sortMode === "sum"
+        ? (a, b) => b[1] - a[1]
+        : (a, b) => a[2].localeCompare(b[2], "he") || b[1] - a[1]);
+      thead = `<div class="thead"><span>שם העסק</span><span class="a">סכום</span><span class="c">קטגוריה</span></div>`;
+      body = sorted.length ? sorted.map(r => rowHTML(r, mx, true)).join("") : EMPTY;
+    }
+
+    const cats = s.group ? " · " + new Set(rows.map(r => r[2])).size + " קטגוריות" : "";
     return `<section class="col ${s.cls}">
       <div class="chead">
         <h2>${s.title}</h2><span class="ct n">${nf(sum)} ₪</span>
-        <span class="cs">${rows.length} שורות${f ? " מתוך " + DATA[s.key].length : ""}</span>
+        <span class="cs">${rows.length} שורות${f ? " מתוך " + DATA[s.key].length : ""}${cats}</span>
       </div>
-      <div class="thead"><span>שם העסק</span><span class="a">סכום</span><span class="c">קטגוריה</span></div>
+      ${thead}
       ${body}
-      <div class="csum"><span>סך הכול</span><span class="am n">${nf(sum)} ₪</span><span class="cg"></span></div>
+      <div class="csum${s.group ? " c2" : ""}"><span>סך הכול</span><span class="am n">${nf(sum)} ₪</span>${s.group ? "" : '<span class="cg"></span>'}</div>
     </section>`;
   }).join("");
   document.getElementById("stat").textContent = f
