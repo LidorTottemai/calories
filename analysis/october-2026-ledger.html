@@ -1,0 +1,214 @@
+<title>הפנקס של אוקטובר</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#EDEEF2; --surface:#FFFFFF; --surface-2:#E3E5EC; --track:#D3D7E1;
+    --ink:#16192A; --ink-2:#545A6E; --ink-3:#7C8296;
+    --rule:#D6D9E2; --rule-strong:#BFC3D0;
+    --gain:#0E7BA3; --gain-soft:#DDEBF3;
+    --drain:#B24420; --drain-soft:#F5E2DA;
+    --locked:#8B5AA8; --locked-soft:#EDE3F3;
+    --shadow:rgba(22,25,42,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+      --ground:#101219; --surface:#191C25; --surface-2:#212530; --track:#2F3441;
+      --ink:#E5E7EF; --ink-2:#9AA0B3; --ink-3:#767C90;
+      --rule:#2A2E3A; --rule-strong:#3A3F4D;
+      --gain:#1FA0BE; --gain-soft:#123642;
+      --drain:#DB7048; --drain-soft:#3D2318;
+      --locked:#A377D0; --locked-soft:#2C2038;
+      --shadow:rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{direction:rtl; margin:0; background:var(--ground); color:var(--ink);
+    font-family:"Assistant","Arial Hebrew",system-ui,sans-serif; font-size:16px;
+    line-height:1.6; -webkit-font-smoothing:antialiased}
+  h1,h2{font-family:"Suez One","Frank Ruhl Libre",Georgia,serif; font-weight:400;
+        text-wrap:balance; margin:0; letter-spacing:-.005em}
+  h1{font-size:clamp(29px,5vw,44px); line-height:1.14}
+  p{margin:0}
+  .n{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+     font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .ltr{direction:ltr; unicode-bidi:isolate; display:inline-block}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:clamp(20px,4vw,50px) clamp(13px,3vw,34px) 70px}
+  .eyebrow{font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+           color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+  header{display:flex; flex-direction:column; gap:13px; padding-bottom:22px;
+         border-bottom:2px solid var(--ink)}
+  .lede{max-width:66ch; color:var(--ink-2); font-size:17.5px; font-weight:300}
+  .lede strong{font-weight:600; color:var(--ink)}
+  .links{display:flex; gap:16px; flex-wrap:wrap}
+  .links a{font-size:13px; color:var(--gain); text-decoration:none; font-weight:600;
+           border-bottom:1px solid currentColor}
+  .links a:hover{color:var(--ink)}
+  .links a:focus-visible{outline:2px solid var(--gain); outline-offset:3px}
+
+  .tools{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:24px 0 16px}
+  .search{flex:1; min-width:230px}
+  .search input{width:100%; padding:10px 14px; font:inherit; font-size:15px;
+    border:1px solid var(--rule-strong); border-radius:3px; background:var(--surface);
+    color:var(--ink); direction:rtl}
+  .search input:focus{outline:2px solid var(--gain); outline-offset:1px; border-color:var(--gain)}
+  .tools button{font:inherit; font-size:13.5px; padding:9px 14px; border:1px solid var(--rule-strong);
+    background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
+  .tools button[aria-pressed="true"]{background:var(--ink); color:var(--ground); border-color:var(--ink)}
+  .tools button:focus-visible{outline:2px solid var(--gain); outline-offset:1px}
+  .hint{font-size:13px; color:var(--ink-3); margin-bottom:14px}
+
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start}
+  .col{border:1px solid var(--rule); background:var(--surface)}
+  .chead{display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:baseline;
+         padding:16px 16px 13px; border-bottom:2px solid var(--ink)}
+  .chead h2{font-size:21px}
+  .chead .ct{font-family:"Suez One",serif; font-size:21px; font-variant-numeric:tabular-nums;
+             white-space:nowrap}
+  .chead .cs{grid-column:1/-1; font-size:12.5px; color:var(--ink-3);
+             font-family:"IBM Plex Mono",monospace}
+  .col.var .chead{border-bottom-color:var(--gain)} .col.var .ct{color:var(--gain)}
+  .col.fix .chead{border-bottom-color:var(--locked)} .col.fix .ct{color:var(--locked)}
+
+  .thead{display:grid; grid-template-columns:1fr auto 88px; gap:10px;
+         padding:9px 16px; border-bottom:1px solid var(--rule-strong);
+         font-size:10.5px; letter-spacing:.09em; color:var(--ink-3); font-weight:600;
+         font-family:"IBM Plex Mono",monospace; background:var(--surface-2)}
+  .thead .a{text-align:end}
+  .row{display:grid; grid-template-columns:1fr auto 88px; gap:10px;
+       padding:8px 16px 9px; border-bottom:1px solid var(--rule); position:relative}
+  .row:last-of-type{border-bottom:none}
+  .row:hover{background:var(--surface-2)}
+  .nm{font-size:13.5px; font-weight:500; overflow-wrap:anywhere; line-height:1.4}
+  .am{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+      font-size:13.5px; text-align:end; white-space:nowrap; align-self:center}
+  .cg{font-size:12px; color:var(--ink-3); white-space:nowrap; overflow:hidden;
+      text-overflow:ellipsis; align-self:center}
+  .bar{position:absolute; inset-block-end:0; inset-inline-start:0; height:2px;
+       background:var(--ink-3); opacity:.45}
+  .col.var .bar{background:var(--gain); opacity:.5}
+  .col.fix .bar{background:var(--locked); opacity:.5}
+  .csum{display:grid; grid-template-columns:1fr auto 88px; gap:10px; padding:12px 16px;
+        background:var(--surface-2); border-top:1px solid var(--rule-strong);
+        font-weight:600; font-size:14px}
+  .csum .am{font-size:15px; font-weight:600; color:var(--ink)}
+  .empty{padding:22px 16px; color:var(--ink-3); font-size:14px; text-align:center}
+
+  footer{margin-top:46px; padding-top:17px; border-top:1px solid var(--rule);
+         font-size:12.5px; color:var(--ink-3); font-weight:300;
+         display:flex; flex-direction:column; gap:6px; max-width:80ch}
+  footer b{font-weight:600; color:var(--ink-2)}
+  footer code{font-family:"IBM Plex Mono",monospace; font-size:11.5px; background:var(--surface-2);
+              padding:1px 5px; border-radius:2px; direction:ltr; display:inline-block}
+  @media (max-width:860px){ .cols{grid-template-columns:1fr} }
+  @media (max-width:420px){
+    .thead,.row,.csum{grid-template-columns:1fr auto; }
+    .thead .c,.row .cg{grid-column:1/-1; font-size:11.5px}
+    .csum .cg{display:none}
+  }
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">RiseUp · אוקטובר 2026 · 208 עסקאות · 125 בתי עסק</p>
+  <h1>הפנקס של אוקטובר</h1>
+  <p class="lede">
+    כל הוצאה שיצאה מהבית באוקטובר, לפי בית עסק.
+    <strong>קבועות 18,109 ₪</strong> ב-33 בתי עסק · <strong>משתנות 22,239 ₪</strong> ב-92.
+    הסיווג קבוע/משתנה הוא של RiseUp עצמה.
+  </p>
+  <div class="links">
+    <a href="https://claude.ai/code/artifact/49a78fdb-1afe-4482-a034-38577828ef75">דף התוכנית</a>
+    <a href="https://claude.ai/code/artifact/a6c6cb8c-54e6-4b36-a1fb-7b5508fb710f">מפענח ההוצאה הגמישה</a>
+    <a href="https://claude.ai/artifact/NnLZqFjsQa9byHiQLxJzcW">הקפיצה של הקבועות</a>
+  </div>
+</header>
+
+<div class="tools">
+  <label class="search"><input type="search" id="q" placeholder="חיפוש בית עסק או קטגוריה — למשל מיקה, אוכל בחוץ, סופרפארם…" aria-label="חיפוש"></label>
+  <button type="button" id="bySum" aria-pressed="true">לפי סכום</button>
+  <button type="button" id="byCat" aria-pressed="false">לפי קטגוריה</button>
+</div>
+<p class="hint" id="stat"></p>
+
+<div class="cols" id="cols"></div>
+
+<footer>
+  <p><b>מקור.</b> RiseUp Exposed API, <code>GET /api/external/transactions?cashflowMonth=2026-10</code>,
+     קריאה בלבד. הסיווג קבוע/משתנה הוא <code>actualType</code> של RiseUp, והקטגוריות הן שלה —
+     כך שהמספרים זהים למה שמוצג באפליקציה. הוסרו הכנסות, עסקאות מסומנות כמוחרגות,
+     ושלושה חיובי כרטיס מרוכזים בעו״ש שמייצרים ספירה כפולה.</p>
+  <p><b>אוקטובר ולא נובמבר.</b> אוקטובר הוא החודש השלם האחרון; נובמבר עדיין חלקי
+     ואי אפשר להשוות אותו.</p>
+  <p><b>שמות בתי העסק כפי שהם בתדפיס.</b> סניפים שונים של אותה רשת מופיעים בשורות
+     נפרדות, ולא איחדתי אותם — כך אפשר לראות איפה בדיוק יצא הכסף.</p>
+  <p><b>סה״כ אוקטובר 40,346 ₪</b> מול הכנסה קבועה של כ-36,000 ₪.</p>
+</footer>
+</div>
+
+<script>
+"use strict";
+const DATA = {"fixed":[["שיק",7350,"דיור",1],["הו”ק הלואה קרן",2405,"הלוואה",2],["חברת החשמל לישראל בע",2163,"חשמל",1],["עירית מודיעין מכבים",916,"ארנונה",1],["ליברה עסקאות ביטוח",632,"תשלומים",1],["הכל לים-צמרת",540,"תשלומים",1],["מי מודיעין בעמ",400,"מים",1],["הו”ק הלו' רבית",399,"הלוואה",2],["העב' לאחר-נייד",350,"העברות",1],["APPLE.COM/BILL",333,"דיגיטל",5],["ANTHROPIC* CLAUDE SUB",318,"כללי",1],["הראל בטוח",306,"ביטוח",1],["YES",294,"תקשורת",1],["קסטרו מודל בע\"מ",257,"תשלומים",1],["עמותת סחלבים תשלומים",200,"חוגים",1],["וי.ברבר",200,"כללי",1],["מור פיט ג'ים",185,"ספורט",1],["ספייס מועדוני כושר ב",149,"ספורט",1],["ליברה ביטוח חובה",121,"תשלומים",1],["הפניקס ביטוח",115,"ביטוח",1],["APPLE.COM/BILL CORK IE",70,"דיגיטל",1],["כלל ביטוח חיים הו\"ק",69,"ביטוח",1],["HOT MOBILE",61,"תקשורת",1],["הפניקס חיים ובריאות",55,"בריאות",1],["רייזאפ מומנטס בע?מ",55,"RiseUp",1],["הראל-ביטוח דירה",38,"ביטוח",1],["GOOGLE*CLOUD DMH8V4",30,"כללי",1],["JetBrains",25,"דיגיטל",1],["GOOGLE ONE",19,"דיגיטל",1],["דמי כרטיס",18,"עמלות",1],["פלאפון חשבון תקופתי",16,"תקשורת",1],["APPLE.COM/BILL ITUNES.COM IE",12,"דיגיטל",1],["עיגול לתחום בריאות",8,"בריאות",2]],"variable":[["תפארת האחוזה",4300,"חינוך ילדים",1],["פעמי פלוס",1560,"כלכלה",1],["סיטי מרקט - מורשת",1298,"כלכלה",18],["העשרת צהרים בעמ הוק",1075,"חינוך ילדים",1],["מיקה מודיעין",1020,"רכב",2],["WOLT",941,"אוכל בחוץ",9],["מיטאון",902,"כלכלה",1],["מאפיית רחוב מודיעין",691,"כלכלה",15],["מאמאהלפ",619,"אחר",1],["CELLO",599,"רכב",1],["TRUMAN&CO",475,"אחר",1],["העב' לאחר-נייד",450,"אחר",1],["שבתאי כפר ויתקין 014",450,"אוכל בחוץ",1],["אתר קרנות",438,"חיסכון",3],["פלאפון תקשורת בע\"מ.",373,"אחר",1],["ג'אנגו",368,"אוכל בחוץ",1],["יח”ד מודיעין)ע",330,"חינוך ילדים",1],["משיכת מזומנים",258,"אחר",1],["מקדונלדס ישפרו מודיעין",241,"אוכל בחוץ",2],["קופ\"ח מאוחדת-בימ\"ק מ",238,"אחר",2],["משרד התחבורה - רשיונות רכב",221,"רכב",1],["העברה בBIT",192,"אחר",1],["זיו הכט קפה",192,"אוכל בחוץ",4],["בורגראנץ קניון עזריאלי מו",189,"אוכל בחוץ",3],["APPLE.COM/BILL",174,"אחר",3],["ג'חנון דה קאסה",173,"אוכל בחוץ",1],["אפליקציית YELLOW טעי",167,"רכב",2],["חצות מודיעין בעמ",166,"אוכל בחוץ",1],["פול מודיעין",161,"ביגוד והנעלה",1],["אופנת טוונט פור סבן",160,"ביגוד והנעלה",1],["BIT",150,"אחר",1],["בא לי SYOT",127,"אחר",1],["סופר פארם מודיעין יש",125,"פארמה",1],["אסף שיפי בע\"מ",119,"אחר",1],["ארומה עזריאלי מודיעין",118,"אוכל בחוץ",1],["מאפיית רחוב מודיעין בע''מ",114,"כלכלה",3],["מיננה - מודיעין",111,"אחר",1],["איקס קבוצת מזון 2024",110,"כלכלה",2],["ZOTLO.NET/ MOVIRA",109,"אחר",2],["סופר פארם מורשת מודי",105,"פארמה",1],["סופרפארם קניון מודיעין",105,"פארמה",1],["הום סנטר מודיעין",102,"אחר",1],["סופר פארם קניון מודי",102,"פארמה",1],["סופרפארם מודיעין ישפרו סנ",101,"פארמה",1],["אגמון החולה",100,"אחר",2],["מקדונלד'ס מורשת מודיעין",97,"אוכל בחוץ",1],["מתוק בכפר",97,"כלכלה",1],["דרך ארץ - 6 אישי",97,"רכב",1],["פלאפון חשבון תקופתי",97,"אחר",2],["בבילון אפליקציה",95,"אחר",1],["אורבניקה מודיעין",85,"ביגוד והנעלה",1],["אדמונד",83,"אחר",1],["דני בתי מאפה",80,"כלכלה",2],["גונאם",79,"אוכל בחוץ",1],["פיצה פצץ מודיעין",78,"אוכל בחוץ",2],["קשר ימי",71,"רכב",1],["מזנוני הספארי",68,"אוכל בחוץ",1],["נונו מימי מודיעין",67,"אוכל בחוץ",1],["ארומה מודיעין",62,"אוכל בחוץ",2],["טמבוריה מרלז",60,"אחר",1],["מריונטה הוד השרון",50,"אחר",1],["עופר פלאפל בעמ",50,"אוכל בחוץ",1],["מאפיית אנה מודיעין",49,"כלכלה",2],["סופרדיל מודיעין",49,"כלכלה",2],["הובי מודיעין",48,"אחר",1],["פת פארם-צמרת",45,"פארמה",1],["בוטיק סנטרל מודיעין",45,"כלכלה",1],["מקדונלד'ס PAY/APPLE",44,"אוכל בחוץ",1],["חניון קניון מודיעין",42,"רכב",7],["לנגנדה מודעין",40,"אוכל בחוץ",1],["לידן חנות נוחות",40,"כלכלה",2],["סופר אלונית חוצה ישר",38,"כלכלה",1],["אילנס רכבת פאתי מודיעין",36,"אוכל בחוץ",1],["פינולי מודיעין",35,"אוכל בחוץ",1],["סיטי מרקט ברכאל חולון בע\"",35,"כלכלה",1],["ביג אפל פיצה",30,"אוכל בחוץ",1],["RE",28,"אוכל בחוץ",1],["שיבולת השרון מודיעין",21,"כלכלה",1],["חנות תנובות",20,"אחר",2],["פותח את ידך",20,"אחר",1],["נאייקס ישראל מכונות אוטומ",20,"אחר",2],["בלאגן רמלה",19,"אוכל בחוץ",2],["חניון כיכר המושבה",19,"רכב",1],["החמניה מודיעין",16,"כלכלה",2],["7 EXPRESS לב העיר מודיעין",14,"כלכלה",3],["ביסטופ תחנת רמלה",14,"אוכל בחוץ",1],["ספייס מועדוני כושר ב",12,"אחר",1],["צומת ספרים הוד השרון המוש",10,"אחר",1],["מתוק במודיעין בע\"מ",9,"כלכלה",1],["איטליינוס נס ציונה",6,"אוכל בחוץ",1],["עיגול לתחום בריאות",0,"אחר",1],["פועלים- דמי כרטיס",0,"אחר",1]]};
+const nf = v => Math.round(v).toLocaleString("he-IL");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SIDES = [
+  { key:"variable", cls:"var", title:"הוצאות משתנות" },
+  { key:"fixed",    cls:"fix", title:"הוצאות קבועות" }
+];
+let sortMode = "sum", filter = "";
+
+function render(){
+  const f = filter.trim().toLowerCase();
+  let shown = 0, shownSum = 0;
+  document.getElementById("cols").innerHTML = SIDES.map(s => {
+    let rows = DATA[s.key].filter(r =>
+      !f || r[0].toLowerCase().includes(f) || r[2].toLowerCase().includes(f));
+    const sum = rows.reduce((a, r) => a + r[1], 0);
+    const max = Math.max(1, ...rows.map(r => r[1]));
+    shown += rows.length; shownSum += sum;
+    rows = rows.slice().sort(sortMode === "sum"
+      ? (a, b) => b[1] - a[1]
+      : (a, b) => a[2].localeCompare(b[2], "he") || b[1] - a[1]);
+    const body = rows.length ? rows.map(r =>
+      `<div class="row">
+         <span class="nm">${esc(r[0])}</span>
+         <span class="am">${nf(r[1])} ₪</span>
+         <span class="cg">${esc(r[2])}</span>
+         <span class="bar" style="width:${(r[1] / max * 100).toFixed(2)}%"></span>
+       </div>`).join("")
+      : `<p class="empty">אין התאמה בעמודה הזאת.</p>`;
+    return `<section class="col ${s.cls}">
+      <div class="chead">
+        <h2>${s.title}</h2><span class="ct n">${nf(sum)} ₪</span>
+        <span class="cs">${rows.length} בתי עסק${f ? " מתוך " + DATA[s.key].length : ""}</span>
+      </div>
+      <div class="thead"><span>שם העסק</span><span class="a">סכום</span><span class="c">קטגוריה</span></div>
+      ${body}
+      <div class="csum"><span>סך הכול</span><span class="am n">${nf(sum)} ₪</span><span class="cg"></span></div>
+    </section>`;
+  }).join("");
+  document.getElementById("stat").textContent = f
+    ? `${shown} בתי עסק תואמים · ${nf(shownSum)} ₪`
+    : `125 בתי עסק · 208 עסקאות · 40,346 ₪ באוקטובר`;
+}
+document.getElementById("q").addEventListener("input", e => { filter = e.target.value; render(); });
+function setSort(m){
+  sortMode = m;
+  document.getElementById("bySum").setAttribute("aria-pressed", String(m === "sum"));
+  document.getElementById("byCat").setAttribute("aria-pressed", String(m === "cat"));
+  render();
+}
+document.getElementById("bySum").addEventListener("click", () => setSort("sum"));
+document.getElementById("byCat").addEventListener("click", () => setSort("cat"));
+render();
+</script>
