@@ -72,9 +72,9 @@ def run_cycle(settings: Settings, store: Store, notifier: Notifier,
     if store.is_first_run():
         store.mark_alerted([c.txn.id for c in changes])
         store.mark_bootstrapped()
-        notifier.send(messages.status_report(
+        notifier.send(messages.boot_report(
             totals, fixed_spent, today, settings.pace_warn_ratio,
-            title="🤖 הבוט עלה · מצב נוכחי",
+            speak=settings.persona,
         ))
         summary["bootstrapped"] = True
         return summary
@@ -89,7 +89,7 @@ def run_cycle(settings: Settings, store: Store, notifier: Notifier,
     if moment.time() >= digest_time and not store.digest_sent_today(today):
         notifier.send(messages.status_report(
             totals, fixed_spent, today, settings.pace_warn_ratio,
-            title="🌙 סיכום יומי",
+            title="🌙 סיכום יומי", speak=settings.persona, opener=True,
         ))
         store.mark_digest_sent(today)
         summary["digest"] = True
@@ -105,7 +105,7 @@ def _announce(changes: list[Change], totals: dict[str, float], today: date,
     for change in updated:
         notifier.send(messages.amount_changed(
             change.txn, change.previous or 0.0,
-            totals.get(change.txn.bucket, 0.0), today,
+            totals.get(change.txn.bucket, 0.0), today, speak=settings.persona,
         ))
 
     if not new:
@@ -116,12 +116,12 @@ def _announce(changes: list[Change], totals: dict[str, float], today: date,
         for change in new:
             notifier.send(messages.transaction_alert(
                 change.txn, totals.get(change.txn.bucket, 0.0),
-                today, settings.pace_warn_ratio,
+                today, settings.pace_warn_ratio, speak=settings.persona,
             ))
     else:
         notifier.send(messages.batched_alert(
             [(c.txn, totals.get(c.txn.bucket, 0.0)) for c in new],
-            today, settings.pace_warn_ratio,
+            today, settings.pace_warn_ratio, speak=settings.persona,
         ))
 
     store.mark_alerted([c.txn.id for c in changes])
@@ -153,7 +153,7 @@ def handle_commands(settings: Settings, store: Store, notifier: Notifier,
         if text.startswith("/status"):
             notifier.reply(chat_id, messages.status_report(
                 store.bucket_totals(month), store.fixed_total(month),
-                today, settings.pace_warn_ratio,
+                today, settings.pace_warn_ratio, speak=settings.persona,
             ))
         elif text.startswith("/month"):
             totals = store.bucket_totals(month)

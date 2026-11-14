@@ -166,3 +166,59 @@ class TestStore(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestPersona(unittest.TestCase):
+    def test_tone_follows_the_numbers(self):
+        from budgetbot import persona
+        half = date(2026, 11, 15)  # 15/30 of the month
+        cases = [
+            (900, 2000, persona.OK),
+            (1400, 2000, persona.WARN),
+            (2100, 2000, persona.OVER),
+            (3200, 2000, persona.BLOWN),
+        ]
+        for spent, budget, expected in cases:
+            with self.subTest(spent=spent):
+                self.assertEqual(Pace(spent, budget, half).tone(), expected)
+
+    def test_pick_is_deterministic_but_varies(self):
+        from budgetbot import persona
+        bank = persona.LINES[persona.WARN]
+        self.assertEqual(persona.pick(bank, "t1"), persona.pick(bank, "t1"))
+        picks = {persona.pick(bank, f"t{i}") for i in range(60)}
+        self.assertGreater(len(picks), 3, "the same line keeps coming back")
+
+    def test_every_line_is_short_and_non_empty(self):
+        from budgetbot import persona
+        banks = list(persona.LINES.values()) + list(persona.DIGEST_OPENERS.values())
+        for bank in banks:
+            for line in bank:
+                self.assertTrue(line.strip())
+                self.assertLessEqual(len(line), 90, line)
+
+    def test_voice_is_appended_not_substituted(self):
+        txn = classify(rec(), TODAY)
+        plain = transaction_alert(txn, spent=1841, today=TODAY, speak=False)
+        spoken = transaction_alert(txn, spent=1841, today=TODAY, speak=True)
+        # Every figure survives; the character is added underneath.
+        self.assertTrue(spoken.startswith(plain))
+        self.assertIn("— מוסלם", spoken)
+        self.assertNotIn("— מוסלם", plain)
+
+    def test_overspend_draws_the_collector(self):
+        from budgetbot import persona
+        txn = classify(rec(), TODAY)
+        spoken = transaction_alert(txn, spent=4000, today=TODAY)
+        self.assertTrue(
+            any(line in spoken for line in persona.LINES[persona.BLOWN]),
+            "a 2x overspend should reach the loudest register",
+        )
+
+    def test_batch_speaks_at_the_worst_offender(self):
+        from budgetbot import persona
+        from budgetbot.messages import batched_alert
+        calm = classify(rec(transactionId="a", categoryLabel="כלכלה"), TODAY)
+        awful = classify(rec(transactionId="b", categoryLabel="פארמה"), TODAY)
+        text = batched_alert([(calm, 100.0), (awful, 1200.0)], TODAY)
+        self.assertTrue(any(line in text for line in persona.LINES[persona.BLOWN]))

@@ -5,6 +5,7 @@ import calendar
 from dataclasses import dataclass
 from datetime import date
 
+from . import persona
 from .classify import Txn
 from .config import FIXED_BUDGET, MONTHLY_INCOME, VARIABLE_BUDGETS, VARIABLE_TOTAL
 
@@ -53,8 +54,19 @@ class Pace:
             return AHEAD
         return ON_TRACK
 
+    def tone(self, warn_ratio: float = 1.15) -> str:
+        return persona.tone(self.spent, self.budget, self.expected, warn_ratio)
 
-def transaction_alert(txn: Txn, spent: float, today: date, warn_ratio: float = 1.15) -> str:
+
+def _with_voice(lines: list[str], state: str, key: str, speak: bool) -> str:
+    text = "\n".join(lines)
+    if not speak:
+        return text
+    return text + "\n\n" + persona.quote(persona.say(state, key))
+
+
+def transaction_alert(txn: Txn, spent: float, today: date,
+                      warn_ratio: float = 1.15, speak: bool = True) -> str:
     budget = VARIABLE_BUDGETS.get(txn.bucket, 0)
     pace = Pace(spent, budget, today)
     left = pace.left
@@ -77,13 +89,17 @@ def transaction_alert(txn: Txn, spent: float, today: date, warn_ratio: float = 1
         lines.append(f"{OVER} הקטגוריה הזאת נגמרה")
     elif mark == AHEAD:
         lines.append(f"{AHEAD} מקדימים את הקצב — לפי התאריך היו אמורים להיות ב-{nis(pace.expected)} ₪")
-    return "\n".join(lines)
+
+    return _with_voice(lines, pace.tone(warn_ratio), txn.id, speak)
 
 
-def batched_alert(items: list[tuple[Txn, float]], today: date, warn_ratio: float = 1.15) -> str:
+def batched_alert(items: list[tuple[Txn, float]], today: date,
+                  warn_ratio: float = 1.15, speak: bool = True) -> str:
     """One message for a burst, so a shopping run does not fire five pings."""
     total = sum(t.amount for t, _ in items)
     lines = [f"🧾 {len(items)} עסקאות חדשות · {nis(total)} ₪ ביחד", ""]
+    worst = persona.OK
+    order = [persona.OK, persona.WARN, persona.OVER, persona.BLOWN]
     for txn, spent in items:
         budget = VARIABLE_BUDGETS.get(txn.bucket, 0)
         pace = Pace(spent, budget, today)
@@ -91,19 +107,26 @@ def batched_alert(items: list[tuple[Txn, float]], today: date, warn_ratio: float
             f"{pace.marker(warn_ratio)} {txn.business} · {nis(txn.amount)} ₪ — {txn.bucket}"
             f" ({nis(spent)}/{nis(budget)})"
         )
+        state = pace.tone(warn_ratio)
+        if order.index(state) > order.index(worst):
+            worst = state
     lines += ["", f"{days_left(today)} ימים לסוף החודש"]
-    return "\n".join(lines)
+    key = items[0][0].id if items else today.isoformat()
+    return _with_voice(lines, worst, key, speak)
 
 
-def amount_changed(txn: Txn, previous: float, spent: float, today: date) -> str:
+def amount_changed(txn: Txn, previous: float, spent: float, today: date,
+                   speak: bool = True) -> str:
     budget = VARIABLE_BUDGETS.get(txn.bucket, 0)
-    return "\n".join([
+    lines = [
         "✏️ עסקה עודכנה",
         f"{txn.business} · {nis(previous)} ₪ → {nis(txn.amount)} ₪",
         f"קטגוריה: {txn.bucket}",
         "",
         f"עד כה החודש: {nis(spent)} מתוך {nis(budget)} ₪",
-    ])
+    ]
+    state = Pace(spent, budget, today).tone()
+    return _with_voice(lines, state, txn.id + "u", speak)
 
 
 def status_report(
@@ -112,18 +135,24 @@ def status_report(
     today: date,
     warn_ratio: float = 1.15,
     title: str = "📊 מצב התקציב",
+    speak: bool = True,
+    opener: bool = False,
 ) -> str:
     variable_spent = sum(totals.get(b, 0.0) for b in VARIABLE_BUDGETS)
     overall = Pace(variable_spent, VARIABLE_TOTAL, today)
     d = days_left(today)
+    state = overall.tone(warn_ratio)
 
-    lines = [f"{title} · {today.strftime('%d/%m')}", ""]
+    lines = [f"{title} · {today.strftime('%d/%m')}"]
+    if speak and opener:
+        lines += ["", persona.digest_opener(state, today.isoformat())]
+    lines.append("")
+
     for bucket, budget in sorted(VARIABLE_BUDGETS.items(), key=lambda kv: -kv[1]):
         spent = totals.get(bucket, 0.0)
         pace = Pace(spent, budget, today)
-        bar = _bar(spent, budget)
         lines.append(f"{pace.marker(warn_ratio)} {bucket}")
-        lines.append(f"   {bar} {nis(spent)}/{nis(budget)} ₪")
+        lines.append(f"   {_bar(spent, budget)} {nis(spent)}/{nis(budget)} ₪")
 
     lines += [
         "",
@@ -134,7 +163,16 @@ def status_report(
         f" (תקציב {nis(VARIABLE_TOTAL + FIXED_BUDGET)})",
         f"{d} ימים לסוף החודש · הכנסה {nis(MONTHLY_INCOME)} ₪",
     ]
-    return "\n".join(lines)
+    return _with_voice(lines, state, today.isoformat() + title, speak)
+
+
+def boot_report(totals: dict[str, float], fixed_spent: float, today: date,
+                warn_ratio: float = 1.15, speak: bool = True) -> str:
+    text = status_report(totals, fixed_spent, today, warn_ratio,
+                         title="🤖 הבוט עלה · מצב נוכחי", speak=False)
+    if not speak:
+        return text
+    return text + "\n\n" + persona.quote(persona.BOOT)
 
 
 def _bar(spent: float, budget: float, width: int = 10) -> str:
@@ -160,10 +198,10 @@ def month_detail(
 
 
 HELP = (
-    "🤖 בוט התקציב\n\n"
+    "🤖 מוסלם הגובה\n\n"
     "/status — כמה נשאר בכל קטגוריה\n"
     "/month — פירוט בתי העסק לפי קטגוריה\n"
     "/help — ההודעה הזאת\n\n"
-    "מעבר לזה אני שולח הודעה אוטומטית על כל עסקה משתנה חדשה, "
-    "ותקציר יומי בערב."
+    "מעבר לזה אני שולח הודעה על כל עסקה משתנה חדשה, ותקציר בערב.\n"
+    "אני רושם הכל."
 )

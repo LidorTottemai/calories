@@ -118,6 +118,7 @@ class Settings:
     http_timeout: int = 30
     retries: int = 3
     commands_enabled: bool = True
+    persona: bool = True
 
     @property
     def configured(self) -> bool:
@@ -151,4 +152,5 @@ def load_settings() -> Settings:
         digest_at=_env_time("DIGEST_AT", "20:30"),
         max_individual_alerts=_env_int("MAX_INDIVIDUAL_ALERTS", 3),
         commands_enabled=os.environ.get("COMMANDS_ENABLED", "1").strip() != "0",
+        persona=os.environ.get("PERSONA", "1").strip() != "0",
     )

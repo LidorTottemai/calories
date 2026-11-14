@@ -90,7 +90,7 @@ def cmd_status(args, settings) -> int:
             store.mark_bootstrapped()
         print(messages.status_report(
             store.bucket_totals(month), store.fixed_total(month),
-            moment.date(), settings.pace_warn_ratio,
+            moment.date(), settings.pace_warn_ratio, speak=settings.persona,
         ))
         return 0
     finally:
