@@ -197,6 +197,22 @@ class TestPersona(unittest.TestCase):
                 self.assertTrue(line.strip())
                 self.assertLessEqual(len(line), 90, line)
 
+    def test_no_duplicate_lines_anywhere(self):
+        from budgetbot import persona
+        everything = [l for bank in persona.LINES.values() for l in bank]
+        everything += [l for bank in persona.DIGEST_OPENERS.values() for l in bank]
+        dupes = {l for l in everything if everything.count(l) > 1}
+        self.assertEqual(dupes, set())
+
+    def test_each_register_has_enough_lines_to_not_repeat(self):
+        from budgetbot import persona
+        for state, bank in persona.LINES.items():
+            with self.subTest(state=state):
+                self.assertGreaterEqual(len(bank), 12, f"{state} is thin")
+        for state, bank in persona.DIGEST_OPENERS.items():
+            with self.subTest(digest=state):
+                self.assertGreaterEqual(len(bank), 4, f"{state} is thin")
+
     def test_voice_is_appended_not_substituted(self):
         txn = classify(rec(), TODAY)
         plain = transaction_alert(txn, spent=1841, today=TODAY, speak=False)
