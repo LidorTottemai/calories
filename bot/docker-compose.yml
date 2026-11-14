@@ -1,0 +1,16 @@
+services:
+  bot:
+    build: .
+    image: budgetbot:latest
+    container_name: budgetbot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TZ: Asia/Jerusalem
+    volumes:
+      - ./data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
