@@ -8,9 +8,14 @@ services:
     environment:
       TZ: Asia/Jerusalem
     volumes:
-      - ./data:/data
+      # Named volume, not a bind mount: a host directory would be owned by the
+      # host user and the container runs as uid 10001, so SQLite could not write.
+      - budgetbot-data:/data
     logging:
       driver: json-file
       options:
         max-size: "5m"
         max-file: "3"
+
+volumes:
+  budgetbot-data:
