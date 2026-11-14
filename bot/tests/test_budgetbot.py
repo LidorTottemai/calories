@@ -219,8 +219,8 @@ class TestPersona(unittest.TestCase):
         spoken = transaction_alert(txn, spent=1841, today=TODAY, speak=True)
         # Every figure survives; the character is added underneath.
         self.assertTrue(spoken.startswith(plain))
-        self.assertIn("— מוסלם", spoken)
-        self.assertNotIn("— מוסלם", plain)
+        self.assertIn("— מועלם", spoken)
+        self.assertNotIn("— מועלם", plain)
 
     def test_overspend_draws_the_collector(self):
         from budgetbot import persona

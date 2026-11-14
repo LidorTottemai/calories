@@ -1,11 +1,11 @@
-"""מוסלם הגובה - the voice of the bot.
+"""מועלם הגובה - the voice of the bot.
 
 Four registers keyed to how badly the budget is doing. Lines are picked
 deterministically from the transaction id, so the same charge always draws the
 same line (stable tests, and a message that does not change if it is re-sent)
 while different charges vary.
 
-Comic debt-collector register: warm, dramatic, put-upon. Moslem is exasperated
+Comic debt-collector register: warm, dramatic, put-upon. Mualem is exasperated
 by the budget, never by the people. No real threats, no insults.
 """
 from __future__ import annotations
@@ -123,7 +123,7 @@ DIGEST_OPENERS: dict[str, tuple[str, ...]] = {
 
 BOOT = "הגעתי. מהיום אני סופר. כל שקל, כל עסקה, בלי יוצא מן הכלל."
 
-SIGNOFF = "— מוסלם"
+SIGNOFF = "— מועלם"
 
 
 def tone(spent: float, budget: float, expected: float, warn_ratio: float = 1.15) -> str:
@@ -156,5 +156,5 @@ def digest_opener(state: str, key: str) -> str:
 
 
 def quote(line: str) -> str:
-    """Render one of Moslem's lines as the closing block of a message."""
+    """Render one of Mualem's lines as the closing block of a message."""
     return f"💬 {line}\n{SIGNOFF}" if line else ""
