@@ -182,6 +182,20 @@ class TestPersona(unittest.TestCase):
             with self.subTest(spent=spent):
                 self.assertEqual(Pace(spent, budget, half).tone(), expected)
 
+    def test_zero_budget_bucket_is_over_at_the_first_shekel(self):
+        from budgetbot import persona
+        day = date(2026, 11, 19)
+        # The contingency line was zeroed, so anything landing there is unplanned.
+        self.assertEqual(Pace(0, 0, day).tone(), persona.OK)
+        self.assertEqual(Pace(0, 0, day).marker(), "✅")
+        self.assertEqual(Pace(50, 0, day).tone(), persona.OVER)
+        self.assertEqual(Pace(50, 0, day).marker(), "🔴")
+
+    def test_budget_splits_still_total_ten_thousand(self):
+        from budgetbot.config import VARIABLE_BUDGETS, VARIABLE_TOTAL
+        self.assertEqual(VARIABLE_TOTAL, 10000)
+        self.assertEqual(sum(VARIABLE_BUDGETS.values()), 10000)
+
     def test_pick_is_deterministic_but_varies(self):
         from budgetbot import persona
         bank = persona.LINES[persona.WARN]

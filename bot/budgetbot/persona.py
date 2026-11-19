@@ -129,7 +129,8 @@ SIGNOFF = "— מועלם"
 def tone(spent: float, budget: float, expected: float, warn_ratio: float = 1.15) -> str:
     """Pick the register from the same figures the pace marker uses."""
     if budget <= 0:
-        return OK
+        # A zeroed bucket (no contingency allowance) is over at the first shekel.
+        return OVER if spent > 0 else OK
     if spent > budget * 1.5:
         return BLOWN
     if spent > budget:

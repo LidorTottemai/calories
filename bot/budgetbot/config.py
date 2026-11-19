@@ -14,13 +14,16 @@ from dataclasses import dataclass, field
 
 #: Monthly ceiling per variable-spending bucket, in shekels.
 VARIABLE_BUDGETS: dict[str, int] = {
-    "סופר ומכולת": 3600,
+    "סופר ומכולת": 3100,
+    "אוכל בחוץ": 3100,
     "רכב": 2000,
-    "אוכל בחוץ": 2000,
     "העברות ושונות": 800,
-    "בלת״ם ואירועים": 600,
     "פארמה": 500,
     "ביגוד והנעלה": 500,
+    # Zeroed on 19/11: the 600 moved to eating out. Anything RiseUp does not
+    # categorise still lands here, and with no allowance it reads as over at
+    # the first shekel - which is what a zero contingency means.
+    "בלת״ם ואירועים": 0,
 }
 VARIABLE_TOTAL = sum(VARIABLE_BUDGETS.values())  # 10,000
 
